@@ -5,10 +5,22 @@
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
 
   :version     (:read-file-form "version-string.sexp")
-  :depends-on  ()
+  :depends-on  ("alexandria"
+                (:version "let-plus"              "0.2")
+                (:version "more-conditions"       "0.1")
+                (:version "utilities.print-items" "0.1"))
 
   :components  ((:module     "src"
-                 :components ((:file       "package")))
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "protocol")
+
+                              (:file       "locations")
+                              (:file       "annotation")
+
+                              (:file       "lines")
+
+                              (:file       "print")))
 
                 (:static-file "COPYING")
                 (:static-file "README.org"))
@@ -20,6 +32,9 @@
 
                (:version "text.source-location" (:read-file-form "version-string.sexp")))
   :components ((:module      "test"
-                :components ((:file       "package"))))
+                :components ((:file       "package")
+                             (:file       "lines")
+
+                             (:file       "smoke"))))
   :perform    (test-op (operation component)
                 (symbol-call '#:text.source-location.test '#:run-tests)))
