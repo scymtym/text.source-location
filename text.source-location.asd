@@ -15,6 +15,7 @@
                  :components ((:file       "package")
                               (:file       "protocol")
 
+                              (:file       "source")
                               (:file       "locations")
                               (:file       "annotation")
 

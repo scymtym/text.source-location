@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the text.source-location system.
 ;;;;
-;;;; Copyright (C) 2017 Jan Moringen
+;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,6 +12,11 @@
 
   (:import-from #:more-conditions
    #:missing-required-initarg)
+
+  ;; Source protocol
+  (:export
+   #:name
+   #:content)
 
   (:export
    #:line+column
