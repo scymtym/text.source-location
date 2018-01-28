@@ -1,6 +1,6 @@
 ;;;; print.lisp --- Printing annotations and locations.
 ;;;;
-;;;; Copyright (C) 2017 Jan Moringen
+;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -109,7 +109,7 @@
                     :key                     #'location
                     :intra-cluster-gap-limit 1)))
     (map nil (lambda+ ((source . annotations))
-               (format stream "In ~A:~@:_~2@T" source)
+               (format stream "In [35m~A[0m:~@:_~2@T" source)
                (pprint-logical-block (stream annotations)
                  (format stream "~{~
                                    ~/text.source-location::print-annotated-lines/~
