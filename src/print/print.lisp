@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:text.source-location)
+(cl:in-package #:text.source-location.print)
 
 ;;; Utilities
 
@@ -14,9 +14,13 @@
 (defun pretty-column (column)
   column)
 
-(defun line-number-width (number)       ; TODO table for small numbers
-  (length (with-output-to-string (stream)
-            (format stream "~:D" number))))
+(defun line-number-width (number)
+  (cond
+    ((< number 10)    1)
+    ((< number 100)   2)
+    ((< number 1000)  3)
+    ((< number 10000) 4)
+    (t                (length (write-to-string number :radix nil :base 10)))))
 
 ;;; Printing lines
 
@@ -66,10 +70,6 @@
     (map nil (lambda (location)
                (let+ (((&values start end start-line start-column end-line end-column)
                        (line-bounds (range (location location)) info)))
-                 #+no (format *terminal-io* "~D-~D ~D:~D-~D:~D~%"
-                         start end
-                         start-line start-column
-                         end-line   end-column)
                  (minf start*        start)
                  (minf start-line*   (max 0 (- start-line context-lines)))
                  (minf start-column* start-column)
@@ -112,7 +112,7 @@
                (format stream "In [35m~A[0m:~@:_~2@T" source)
                (pprint-logical-block (stream annotations)
                  (format stream "~{~
-                                   ~/text.source-location::print-annotated-lines/~
+                                   ~/text.source-location.print::print-annotated-lines/~
                                    ~^~@:_⁞ ⁞  ⁞~@:_~@:_~
                                  ~}"
                          annotations)))

@@ -19,7 +19,12 @@
                               (:file       "locations")
                               (:file       "annotation")
 
-                              (:file       "lines")
+                              (:file       "lines")))
+
+                (:module     "print"
+                 :depends-on ("src")
+                 :serial     t
+                 :components ((:file       "package")
 
                               (:file       "print")))
 
