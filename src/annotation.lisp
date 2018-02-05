@@ -1,6 +1,6 @@
 ;;;; annotation.lisp --- .
 ;;;;
-;;;; Copyright (C) 2017 Jan Moringen
+;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -16,7 +16,9 @@
              :reader  text))
   (:default-initargs
    :location (missing-required-initarg 'annotation :location)
-   :text     (missing-required-initarg 'annotation :text)))
+   :text     (missing-required-initarg 'annotation :text))
+  (:documentation
+   "A location within a source together with an annotation text."))
 
 ;;; annotated-locations
 

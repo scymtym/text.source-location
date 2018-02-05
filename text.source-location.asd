@@ -32,6 +32,7 @@
   :depends-on ((:version "fiveam"               "1.3")
 
                (:version "text.source-location" (:read-file-form "version-string.sexp")))
+
   :components ((:module      "test"
                 :components ((:file       "package")
                              (:file       "lines")
