@@ -26,32 +26,20 @@
 
 (defun print-annotated-line (stream number content annotations
                              &key
-                             (start-column 0)
-                             end-column
-                             (line-number-width (when number
-                                                  (line-number-width number))))
-  (let* ((end-column (when (and end-column (< end-column (length content)))
-                       end-column))
-         (slice      (if (< start-column (length content))
-                         (subseq content start-column end-column)
-                         "")))
-    (format stream "~@[~V:D │ ~]~
-                    ~[~:;…~]~A~:[~;…~]"
-            line-number-width (pretty-line number)
-            start-column slice end-column))
-  (when annotations
-    (format stream "~@:_~@[~V@T │ ~]" line-number-width)
-    (loop :for previous = (max 0 (1- start-column)) :then (+ end (length text))
-       :for (start end text) :in annotations
-       :when (> previous start)
-       :do (format stream "~@:_~@[~V@T │ ~]" line-number-width)
-           (setf previous (max 0 (1- start-column)))
-       :do (format stream (ecase (random-elt '(:error :warning :note))
-                            ((nil)    "~V@T~V,,,'▔<~>~A")
-                            (:error   "~V@T[31m~V,,,'▔<~>~A[0m")
-                            (:warning "~V@T[33m~V,,,'▔<~>~A[0m")
-                            (:note    "~V@T[32m~V,,,'▔<~>~A[0m"))
-                   (- start previous) (- end start) text))))
+                               (start-column 0)
+                               end-column
+                               (line-number-width (when number
+                                                    (line-number-width number))))
+  (let ((style (make-instance 'style-unicode)))
+    (print-line-using-style style stream number content
+                            :start-column      start-column
+                            :end-column        end-column
+                            :line-number-width line-number-width)
+    (unless (emptyp annotations)
+      (print-annotations-using-style style stream number annotations
+                                     :start-column      start-column
+                                     :end-column        end-column
+                                     :line-number-width line-number-width))))
 
 (defun print-annotated-lines (stream locations &optional colon? at?)
   (declare (ignore colon? at?))

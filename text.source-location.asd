@@ -25,6 +25,7 @@
                  :depends-on ("src")
                  :serial     t
                  :components ((:file       "package")
+                              (:file       "protocol")
 
                               (:file       "print")))
 
