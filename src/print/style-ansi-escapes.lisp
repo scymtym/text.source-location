@@ -13,9 +13,9 @@
                                    (number  integer)
                                    (content string)
                                    &key
-                                     (start-column      0)
-                                     end-column
-                                     (line-number-width (line-number-width number)))
+                                   (start-column      0)
+                                   end-column
+                                   (line-number-width (line-number-width number)))
   (let* ((end-column (when (and end-column (< end-column (length content)))
                        end-column))
          (slice      (if (< start-column (length content))
@@ -26,20 +26,21 @@
             line-number-width (pretty-line number)
             start-column slice end-column)))
 
-(defmethod print-annotation-using-style ((style      style-unicode)
-                                         (stream     t)
-                                         (width      integer)
-                                         (annotation t))
+(defmethod print-line-annotation-using-style ((style      style-unicode)
+                                              (stream     t)
+                                              (width      integer)
+                                              (annotation t))
   (format stream "~V,,,'▔<~>~A" width annotation))
 
-(defmethod print-annotations-using-style ((style       style-unicode)
-                                          (stream      t)
-                                          (line-number integer)
-                                          (annotations cons)
-                                          &key
-                                          (start-column      0)
-                                          end-column
-                                          (line-number-width (line-number-width line-number)))
+(defmethod print-line-annotations-using-style
+    ((style       style-unicode)
+     (stream      t)
+     (line-number integer)
+     (annotations cons)
+     &key
+     (start-column      0)
+     end-column
+     (line-number-width (line-number-width line-number)))
   (declare (ignore end-column))
   (let+ (((&flet fringe ()
             (format stream "~@:_~@[~V@T │ ~]" line-number-width))))
@@ -50,7 +51,8 @@
           :do (fringe)
               (setf previous (max 0 (1- start-column)))
           :do (format stream "~V@T" (- start previous))
-              (print-annotation-using-style style stream (- end start) text))))
+              (print-line-annotation-using-style
+               style stream (- end start) text))))
 
 ;;; `style-unicode+ansi-escapes'
 
@@ -62,15 +64,19 @@
                                      (source t))
   (format stream "In [35m~A[0m:" source))
 
-(defmethod print-annotation-using-style ((style      style-unicode+ansi-escapes)
-                                         (stream     t)
-                                         (width      integer)
-                                         (annotation t))
-  (format stream (ecase (random-elt '(:error :warning :note))
-                   ((nil)    "~V,,,'▔<~>~A")
-                   (:error   "[31m~V,,,'▔<~>~A[0m")
-                   (:warning "[33m~V,,,'▔<~>~A[0m")
-                   (:note    "[32m~V,,,'▔<~>~A[0m"))
-          width annotation))
+(defmethod print-line-annotation-using-style
+    :around ((style      style-unicode+ansi-escapes)
+             (stream     t)
+             (width      integer)
+             (annotation t))
+  (write-string (ecase (random-elt '(:error :warning :note))
+                  ((nil)    "")
+                  (:error   "[31m")
+                  (:warning "[33m")
+                  (:note    "[32m"))
+                stream)
+  (unwind-protect
+       (call-method)
+    (write-string "[0m" stream)))
 
 (setf *style* (make-instance 'style-unicode+ansi-escapes))

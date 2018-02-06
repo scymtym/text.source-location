@@ -52,7 +52,9 @@
   (:export
    #:source
    #:source-content ; TODO first class source
-   #:range)
+   #:range
+
+   #:make-location)
 
   ;; Annotation protocol
   (:export

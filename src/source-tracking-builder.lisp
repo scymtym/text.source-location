@@ -12,8 +12,10 @@
 
   ;; Source tracking builder protocol
   (:export
-   #:input
-   #:target)
+   #:source
+   #:target
+
+   #:make-location)
 
   ;; Source tracking builder creation protocol
   (:export
@@ -22,36 +24,46 @@
 
 (cl:in-package  #:text.source-location.source-tracking-builder)
 
+;;; Location construction protocol
+
+(defgeneric make-location (builder bounds)
+  (:documentation
+   "TODO"))
+
 ;;; Helper structure
 
 (defstruct (partial-node
-             (:constructor make-partial-node (node source)))
-  (node   nil)
-  (source nil :read-only t))
+             (:constructor make-partial-node (node location)))
+  (node     nil)
+  (location nil :read-only t))
 
 ;;; The builder
 
 (defclass source-tracking-builder ()
-  ((input  :initarg  :input
-           :accessor input)
+  ((source :initarg  :source
+           :accessor source)
    (target :initarg  :target
            :reader   target))
   (:default-initargs
-   :input  (missing-required-initarg 'source-tracking-builder :input)
+   :source (missing-required-initarg 'source-tracking-builder :source)
    :target (missing-required-initarg 'source-tracking-builder :target)))
 
 (declaim (inline make-source-tracking-builder))
-(defun make-source-tracking-builder (input target)
-  (make-instance 'source-tracking-builder :input input :target target))
+(defun make-source-tracking-builder (source target)
+  (make-instance 'source-tracking-builder :source source :target target))
+
+(defmethod make-location ((builder source-tracking-builder)
+                          (bounds  cons))
+  (let+ (((start . end) bounds))
+    (text.source-location:make-location (source builder) start end)))
 
 (defmethod bp:make-node ((builder source-tracking-builder)
                          (kind    t)
                          &rest initargs &key bounds)
-  (let+ ((node (apply #'bp:make-node (target builder) kind
-                      (remove-from-plist initargs :bounds)))
-         #+later ((start . end) bounds)
-         #+later (location (make-location (input builder) start end)))
-    (make-partial-node node bounds #+no location)))
+  (let ((node     (apply #'bp:make-node (target builder) kind
+                         (remove-from-plist initargs :bounds)))
+        (location (make-location builder bounds)))
+    (make-partial-node node location)))
 
 (defmethod bp:relate ((builder  source-tracking-builder)
                       (relation t)
@@ -70,4 +82,4 @@
   ; (log:info kind node)
   (let+ (; ((&structure partial-node- node source) node)
          (node1 (bp:finish-node (target builder) kind (partial-node-node node))))
-    (model.transform.trace:recording-transform (() (partial-node-source node)) node1)))
+    (model.transform.trace:recording-transform (() (partial-node-location node)) node1)))

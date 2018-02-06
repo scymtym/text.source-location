@@ -34,7 +34,7 @@
            :reader  text))              ; TODO good idea?
   (:default-initargs
    :line   (missing-required-initarg 'line+column-position :line)
-    :column (missing-required-initarg 'line+column-position :column)))
+   :column (missing-required-initarg 'line+column-position :column)))
 
 (defmethod index ((position line+column-position))
   (line+column->index (line position) (column position) (text position)))
@@ -69,7 +69,7 @@
           :reader  end))
   (:default-initargs
    :start (missing-required-initarg 'range :start)
-    :end   (missing-required-initarg 'range :end)))
+   :end   (missing-required-initarg 'range :end)))
 
 (defmethod bounds ((range range))
   (values (start range) (end range)))
@@ -115,7 +115,7 @@
    (range          :initarg  :range
                    :type     (or null range)
                    :accessor range ; TODO read-only?
-                   :initform nil
+                   :initform nil ; TODO required?
                    :documentation
                    "Optionally stores bounds of interesting region
                     within source string."))
@@ -157,7 +157,7 @@
   (end (range range)))
 
 (defmethod bounds ((range location))
-  (bounds range))
+  (bounds (range range)))
 
 #+no (macrolet
     ((define-method (name &body body)
@@ -178,7 +178,16 @@
       (- position (%position-of-newline-before content position))))
 
 (defmethod print-items:print-items append ((object location))
-  (print-items:print-items (range object)))
+  (append ; (print-items:print-items (source object))
+   ;; '((:separator nil ": " ((:after  :source-name)
+   ;;                         (:before :start))))
+          (print-items:print-items (range object))))
+
+(defun make-location (source start end &key source-content)
+  (make-instance 'location
+                 :source source ; (make-source source :content source-content)
+                 :source-content (or source-content (when (stringp source) source))
+                 :range  (make-range start end)))
 
 (defmethod location< ((left location) (right location))
   (location< (start left) (start right)))

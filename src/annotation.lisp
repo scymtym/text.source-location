@@ -6,9 +6,9 @@
 
 (cl:in-package #:text.source-location)
 
-;;;
+;;; `annotation'
 
-(defclass annotation ()
+(defclass annotation (print-items:print-items-mixin)
   ((location :initarg :location
              :reader  location)
    (text     :initarg :text
@@ -20,7 +20,18 @@
   (:documentation
    "A location within a source together with an annotation text."))
 
-;;; annotated-locations
+(defmethod range ((location annotation))
+  (range (location location)))
 
-(defclass annotated-locations ()
-  ())
+(defmethod start ((range annotation))
+  (start (location range)))
+
+(defmethod end ((range annotation))
+  (end (location range)))
+
+(defmethod bounds ((range annotation))
+  (bounds (location range)))
+
+(defmethod print-items:print-items append ((object annotation))
+  `(,@(print-items:print-items (location object))
+      (:annotation ,(text object) "~A")))
