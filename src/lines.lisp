@@ -1,6 +1,6 @@
-;;;; positions.lisp --- Functions for handling positions in text
+;;;; lines.lisp --- Converting between indices and line-column pairs.
 ;;;;
-;;;; Copyright (C) 2017 Jan Moringen
+;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -24,11 +24,11 @@
       (make-newline-vector 0)
       (loop :with newlines = (or newlines
                                  (make-newline-vector))
-         :for previous = 0 :then next
-         :for next = (position #\Newline text :start (1+ previous))
-         :while next
-         :do (vector-push-extend next newlines (max 10 (length newlines)))
-         :finally (return newlines))))
+            :for previous = 0 :then next
+            :for next = (position #\Newline text :start (1+ previous))
+            :while next
+            :do (vector-push-extend next newlines (max 10 (length newlines)))
+            :finally (return newlines))))
 
 (declaim (inline make-text-info))
 (defstruct (text-info
