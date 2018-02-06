@@ -3,14 +3,19 @@
 (defclass style-unicode ()
   ())
 
+(defmethod print-source-using-style ((style  style-unicode)
+                                     (stream t)
+                                     (source t))
+  (format stream "In ~A:" source))
+
 (defmethod print-line-using-style ((style   style-unicode)
                                    (stream  t)
                                    (number  integer)
                                    (content string)
                                    &key
-                                   (start-column      0)
-                                   end-column
-                                   (line-number-width (line-number-width number)))
+                                     (start-column      0)
+                                     end-column
+                                     (line-number-width (line-number-width number)))
   (let* ((end-column (when (and end-column (< end-column (length content)))
                        end-column))
          (slice      (if (< start-column (length content))
@@ -20,6 +25,12 @@
                     ~[~:;…~]~A~:[~;…~]"
             line-number-width (pretty-line number)
             start-column slice end-column)))
+
+(defmethod print-annotation-using-style ((style      style-unicode)
+                                         (stream     t)
+                                         (width      integer)
+                                         (annotation t))
+  (format stream "~V,,,'▔<~>~A" width annotation))
 
 (defmethod print-annotations-using-style ((style       style-unicode)
                                           (stream      t)
@@ -38,14 +49,28 @@
           :when (> previous start)
           :do (fringe)
               (setf previous (max 0 (1- start-column)))
-          :do (format stream (ecase (random-elt '(:error :warning :note))
-                               ((nil)    "~V@T~V,,,'▔<~>~A")
-                               (:error   "~V@T[31m~V,,,'▔<~>~A[0m")
-                               (:warning "~V@T[33m~V,,,'▔<~>~A[0m")
-                               (:note    "~V@T[32m~V,,,'▔<~>~A[0m"))
-                      (- start previous) (- end start) text))))
+          :do (format stream "~V@T" (- start previous))
+              (print-annotation-using-style style stream (- end start) text))))
 
-()
+;;; `style-unicode+ansi-escapes'
 
-(defclass style-unicode+ansi-escapes ()
+(defclass style-unicode+ansi-escapes (style-unicode)
   ())
+
+(defmethod print-source-using-style ((style  style-unicode+ansi-escapes)
+                                     (stream t)
+                                     (source t))
+  (format stream "In [35m~A[0m:" source))
+
+(defmethod print-annotation-using-style ((style      style-unicode+ansi-escapes)
+                                         (stream     t)
+                                         (width      integer)
+                                         (annotation t))
+  (format stream (ecase (random-elt '(:error :warning :note))
+                   ((nil)    "~V,,,'▔<~>~A")
+                   (:error   "[31m~V,,,'▔<~>~A[0m")
+                   (:warning "[33m~V,,,'▔<~>~A[0m")
+                   (:note    "[32m~V,,,'▔<~>~A[0m"))
+          width annotation))
+
+(setf *style* (make-instance 'style-unicode+ansi-escapes))

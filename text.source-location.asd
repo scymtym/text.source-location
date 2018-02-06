@@ -22,12 +22,15 @@
                               (:file       "lines")))
 
                 (:module     "print"
+                 :pathname   "src/print"
                  :depends-on ("src")
                  :serial     t
                  :components ((:file       "package")
                               (:file       "protocol")
 
-                              (:file       "print")))
+                              (:file       "print")
+
+                              (:file       "style-ansi-escapes")))
 
                 (:static-file "COPYING")
                 (:static-file "README.org"))

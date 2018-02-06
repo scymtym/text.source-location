@@ -2,7 +2,9 @@
   (:use
    #:cl
    #:alexandria
-   #:let-plus)
+   #:let-plus
+
+   #:text.source-location)
 
   (:export
    ))
