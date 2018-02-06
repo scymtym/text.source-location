@@ -19,11 +19,40 @@
    #:content)
 
   (:export
+   #:text-info
+
    #:line+column
    #:line+column->index
 
    #:line-bounds
    #:lines)
+
+  ;; Experimental position protocol
+  (:export
+   #:index
+
+   #:line
+   #:column)
+
+  ;; Range protocol
+  (:export
+   #:start
+   #:end)
+
+  ;; Location protocol
+  (:export
+   #:source
+   #:source-content ; TODO first class source
+   #:range)
+
+  ;; Annotation protocol
+  (:export
+   #:location
+   #:text)
+
+  ;; Utilities?
+  (:export
+   #:cluster-locations)
 
   (:documentation
    "Classes and functions for managing and presenting locations in text."))
