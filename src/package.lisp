@@ -18,6 +18,7 @@
    #:name
    #:content)
 
+  ;; TODO where should this go? what should its name be?
   (:export
    #:text-info
 
@@ -26,6 +27,11 @@
 
    #:line-bounds
    #:lines)
+
+  ;; Location comparison protocol
+  (:export
+   #:location<
+   #:location=)
 
   ;; Experimental position protocol
   (:export
@@ -37,7 +43,10 @@
   ;; Range protocol
   (:export
    #:start
-   #:end)
+   #:end
+   #:bounds
+
+   #:make-range)
 
   ;; Location protocol
   (:export

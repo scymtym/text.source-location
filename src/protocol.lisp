@@ -1,12 +1,22 @@
 ;;;; protocol.lisp --- Protocol function provided by the text.source-location system.
 ;;;;
-;;;; Copyright (C) 2017 Jan Moringen
+;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:text.source-location)
 
-;;;
+;;; Source protocol
+
+(defgeneric name (source)
+  (:documentation
+   "TODO"))
+
+(defgeneric content (source)
+  (:documentation
+   "TODO"))
+
+;;; Location comparison protocol
 
 (defgeneric location< (left right)
   (:documentation
@@ -28,6 +38,10 @@
   (:documentation
    "TODO"))
 
+(defgeneric bounds (range)
+  (:documentation
+   "TODO"))
+
 ;;; Location protocol
 
 (defgeneric source (location))
@@ -38,9 +52,13 @@
 
 ;;; Annotation protocol
 
-(defgeneric location (annotation))
+(defgeneric location (annotation)
+  (:documentation
+   "TODO"))
 
-(defgeneric text (annotation)) ; TODO could be any object
+(defgeneric text (annotation)  ; TODO could be any object, not just text
+  (:documentation
+   "TODO"))
 
 ;;; Line and column protocol
 

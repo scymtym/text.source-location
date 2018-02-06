@@ -1,6 +1,6 @@
 ;;;; locations.lisp --- Representation and utilities for source locations.
 ;;;;
-;;;; Copyright (C) 2012-2017 Jan Moringen
+;;;; Copyright (C) 2012-2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,6 +20,9 @@
 (defmethod location< ((left index-position) (right index-position))
   (< (index left) (index right)))
 
+(defmethod location= ((left index-position) (right index-position) &key)
+  (= (index left) (index right)))
+
 ;;; `line+column-position' TODO is having this a good idea?
 
 (defclass line+column-position (print-items:print-items-mixin)
@@ -28,18 +31,32 @@
    (column :initarg :column
            :reader  column)
    (text   :initarg :text
-           :reader  text)) ; TODO good idea?
+           :reader  text))              ; TODO good idea?
   (:default-initargs
    :line   (missing-required-initarg 'line+column-position :line)
-   :column (missing-required-initarg 'line+column-position :column)))
+    :column (missing-required-initarg 'line+column-position :column)))
+
+(defmethod index ((position line+column-position))
+  (line+column->index (line position) (column position) (text position)))
 
 (defmethod print-items:print-items append ((object line+column-position))
   `((:line      ,(line object)   "~D")
     (:separator nil              ":"  ((:after :line)))
     (:column    ,(column object) "~D" ((:after :separator)))))
 
-(defmethod index ((position line+column-position))
-  (line+column->index (line position) (column position) (text position)))
+(defmethod location< ((left  line+column-position)
+                      (right line+column-position))
+  (let ((line-left  (line left))
+        (line-right (line right)))
+    (or (< line-left line-right)
+        (and (= line-left line-right)
+             (< (column left) (column right))))))
+
+(defmethod location= ((left  line+column-position)
+                      (right line+column-position)
+                      &key)
+  (and (= (line left) (line right))
+       (= (column left) (column right))))
 
 ;;; `range'
 
@@ -53,6 +70,9 @@
   (:default-initargs
    :start (missing-required-initarg 'range :start)
     :end   (missing-required-initarg 'range :end)))
+
+(defmethod bounds ((range range))
+  (values (start range) (end range)))
 
 ;; TODO assert (location< start end)
 
@@ -130,11 +150,14 @@
           (check-position (car bounds) :inclusive? t)
           (check-position (cdr bounds) :inclusive? nil))))
 
-(defmethod start ((location location))
-  (start (range location)))
+(defmethod start ((range location))
+  (start (range range)))
 
-(defmethod end ((location location))
-  (end (range location)))
+(defmethod end ((range location))
+  (end (range range)))
+
+(defmethod bounds ((range location))
+  (bounds range))
 
 #+no (macrolet
     ((define-method (name &body body)
