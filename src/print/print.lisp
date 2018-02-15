@@ -95,25 +95,10 @@
                               (context-lines    2)
                               (context-columns  36))
   (declare (ignore colon? at?))
-  (let+ (((&values ; text info
-                   &ign &ign ; start*        end*
+  (let+ (((&values &ign &ign ; start*        end*
                    start-line*   end-line*
-                   start-column* end-column*
-                   any-multi-line?)
+                   start-column* end-column*)
           (annotation-bounds annotations :context-lines context-lines)))
-    #+no (map nil (lambda (annotation)
-               (let+ (((&values start end start-line start-column end-line end-column)
-                       (line-bounds (range annotation) info)))
-                 (minf start*        start)
-                 (minf start-line*   (max 0 (- start-line context-lines)))
-                 (minf start-column* start-column)
-                 (maxf end*          end)
-                 (maxf end-line*     (min (length (text.source-location::text-info-newlines info)) ; TODO
-                                          (+ end-line context-lines)))
-                 (maxf end-column*   end-column)
-                 (when (/= start-line end-line)
-                   (setf any-multi-line? t))))
-         annotations)
     (loop :with line-number-width = (or line-number-width (line-number-width end-line*))
           :for  line-number :from start-line* :to end-line*
           :for  (line-start line-end) = (multiple-value-list
@@ -141,15 +126,21 @@
                  :line-number-width line-number-width))))
 
 (defun print-annotations (stream annotations &key (context-lines 2))
-  (let* ((clusters (cluster-locations
-                    annotations
-                    :key                     #'location
-                    :intra-cluster-gap-limit (+ 2 (* 2 context-lines)))))
+  (let ((clusters (cluster-locations
+                   annotations
+                   :key                     #'location
+                   :intra-cluster-gap-limit (+ 2 (* 2 context-lines)))))
     (map nil (lambda+ ((source . annotations))
                (print-source stream source)
                (format stream "~@:_~2@T")
                (pprint-logical-block (stream annotations)
-                 (loop :with line-number-width = 2
+                 (loop :with last-location = (location (lastcar (lastcar annotations)))
+                       :with text-info = (text-info (content (source last-location)))
+                       :with line-number-width
+                             = (line-number-width
+                                (+ (nth-value
+                                    4 (line-bounds (range last-location) text-info))
+                                   context-lines))
                        :for  (annotation next) :on annotations
                        :do   (print-annotated-lines
                               stream annotation nil nil
