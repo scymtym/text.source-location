@@ -77,6 +77,9 @@
 (defmethod line-bounds ((thing t) (text string))
   (line-bounds thing (text-info text)))
 
+(defmethod line-bounds ((thing t) (text t))
+  (line-bounds (range thing) text))
+
 (defmethod line-bounds ((thing integer) (text text-info))
   (let* ((newlines   (text-info-newlines text))
          (line-count (length newlines))
