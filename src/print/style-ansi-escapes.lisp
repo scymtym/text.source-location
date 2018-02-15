@@ -33,30 +33,41 @@
 (defmethod print-line-annotation-using-style ((style      style-unicode)
                                               (stream     t)
                                               (width      integer)
+                                              (position   (eql :above))
                                               (annotation t))
-  (format stream "~V,,,'▔<~>~A" width annotation))
+  (format stream "~V,,,'▁<~>" width))
+
+(defmethod print-line-annotation-using-style ((style      style-unicode)
+                                              (stream     t)
+                                              (width      integer)
+                                              (position   (eql :below))
+                                              (annotation t))
+  (format stream "~V,,,'▔<~>~A" width (text annotation)))
 
 (defmethod print-line-annotations-using-style
     ((style       style-unicode)
      (stream      t)
      (line-number integer)
+     (position    t)
      (annotations cons)
      &key
      (start-column      0)
      end-column
      (line-number-width (line-number-width line-number)))
   (declare (ignore end-column))
-  (let+ (((&flet fringe ()
-            (format stream "~@:_~@[~V@T │ ~]" line-number-width))))
+  (let+ (((&flet fringe (&optional fresh-line?)
+            (format stream "~:[~;~@:_~]~@[~V@T │ ~]"
+                    fresh-line? line-number-width))))
     (fringe)
-    (loop :for previous = (max 0 (1- start-column)) :then (+ end (length text))
-          :for (start end text) :in annotations
+    (loop :for previous = (max 0 (1- start-column)) :then (+ end (length (text annotation)))
+          :for (start end annotation) :in annotations
           :when (> previous start)
-          :do (fringe)
+          :do (fringe t)
               (setf previous (max 0 (1- start-column)))
           :do (format stream "~V@T" (- start previous))
               (print-line-annotation-using-style
-               style stream (- end start) text))))
+               style stream (- end start) position annotation)
+          :finally (pprint-newline :mandatory stream))))
 
 ;;; `style-unicode+ansi-escapes'
 
@@ -76,13 +87,13 @@
     :around ((style      style-unicode+ansi-escapes)
              (stream     t)
              (width      integer)
+             (position   t)
              (annotation t))
-  (write-string (ecase (random-elt '(:error :warning :note))
-                  ((nil)    "")
-                  (:error   "[31m")
-                  (:warning "[33m")
-                  (:note    "[32m"))
-                stream)
+  (format stream "~C[~Dm" #\Escape (ecase (kind annotation)
+                                     (:info    34)
+                                     (:note    32)
+                                     (:warning 33)
+                                     (:error   31)))
   (unwind-protect
        (call-next-method)
     (format stream "~C[0m" #\Escape)))

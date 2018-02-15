@@ -36,16 +36,20 @@
                              (line-number-width (when number
                                                   (line-number-width number)))
                              (style             *style*))
-  (print-line-using-style style stream number content
-                          :start-column      start-column
-                          :end-column        end-column
-                          :line-number-width line-number-width)
-  (unless (emptyp annotations)
-    (print-line-annotations-using-style
-     style stream number annotations
-     :start-column      start-column
-     :end-column        end-column
-     :line-number-width line-number-width)))
+  (let+ (((&flet print-annotations (position)
+            (when-let ((annotations (remove position annotations :test-not #'eq :key #'fourth)))
+              (print-line-annotations-using-style
+               style stream number position annotations
+               :start-column      start-column
+               :end-column        end-column
+               :line-number-width line-number-width)))))
+    (print-annotations :above)
+    (print-line-using-style style stream number content
+                            :start-column      start-column
+                            :end-column        end-column
+                            :line-number-width line-number-width)
+    (pprint-newline :mandatory stream)
+    (print-annotations :below)))
 
 (defun annotation-bounds (annotations
                           &key
@@ -112,6 +116,7 @@
           :for  line-number :from start-line* :to end-line*
           :for  (line-start line-end) = (multiple-value-list
                                          (line-bounds line-number info))
+          :for  line-length  = (- line-end line-start)
           :for  line-content = (subseq text line-start line-end)
           :do   (print-annotated-line
                  stream line-number line-content
@@ -119,14 +124,19 @@
                        :for range       = (range (location annotation))
                        :for start-index = (index (start range)) ; TODO (bounds range)
                        :for end-index   = (index (end range))
-                       :when (<= line-start start-index end-index line-end)
+                       :when (<= line-start start-index line-end (1- end-index))
                        :collect (list (- start-index line-start)
+                                      (min line-length (- end-index line-start))
+                                      annotation
+                                      :above)
+                       :when (<= line-start end-index line-end)
+                       :collect (list (max 0 (- start-index line-start))
                                       (- end-index line-start)
-                                      (text annotation)))
+                                      annotation
+                                      :below))
                  :start-column      (max 0 (- start-column* context-columns))
                  :end-column        (+ end-column* context-columns)
-                 :line-number-width line-number-width)
-                (pprint-newline :mandatory stream))))
+                 :line-number-width line-number-width))))
 
 (defun print-annotations (stream annotations &key (context-lines 2))
   (let* ((clusters (cluster-locations
@@ -138,13 +148,13 @@
                (format stream "~@:_~2@T")
                (pprint-logical-block (stream annotations)
                  (loop :with line-number-width = 2
-                       :for (annotation next) :on annotations
-                       :do (print-annotated-lines
-                            stream annotation nil nil
-                            :line-number-width line-number-width
-                            :context-lines     context-lines)
+                       :for  (annotation next) :on annotations
+                       :do   (print-annotated-lines
+                              stream annotation nil nil
+                              :line-number-width line-number-width
+                              :context-lines     context-lines)
                        :when next
-                       :do (format stream "~@:_~V<⁞~> ⁞  ⁞~@:_~@:_"
-                                   line-number-width)))
+                       :do   (format stream "~@:_~V<⁞~> ⁞  ⁞~@:_~@:_"
+                                     line-number-width)))
                (pprint-newline :mandatory stream))
          clusters)))
