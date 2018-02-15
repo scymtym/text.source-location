@@ -90,6 +90,7 @@
 (uiop:register-image-restore-hook
  (lambda ()
    (setf *style* (service-provider:make-provider
-                  'style (if (interactive-stream-p *terminal-io*)
+                  'style (if (or (interactive-stream-p *standard-output*)
+                                 (interactive-stream-p *error-output*))
                              :unicode+ansi-escapes
                              :unicode)))))
