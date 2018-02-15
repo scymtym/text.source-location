@@ -87,7 +87,7 @@
                               (info             (text-info text))
                               line-number-width
                               (context-lines    2)
-                              (context-columns  16))
+                              (context-columns  36))
   (declare (ignore colon? at?))
   (let+ (((&values ; text info
                    &ign &ign ; start*        end*
@@ -145,5 +145,6 @@
                             :context-lines     context-lines)
                        :when next
                        :do (format stream "~@:_~V<⁞~> ⁞  ⁞~@:_~@:_"
-                                   line-number-width))))
+                                   line-number-width)))
+               (pprint-newline :mandatory stream))
          clusters)))
