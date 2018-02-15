@@ -44,7 +44,8 @@
     (:kind       ,(kind object) " ~A" ((:after :end)))
     (:annotation ,(text object) " ~A" ((:after :kind)))))
 
-(defun make-annotation (location text)
-  (make-instance 'annotation
-                 :location location
-                 :text     text))
+(defun make-annotation (location text &key kind)
+  (apply #'make-instance 'annotation
+         :location location
+         :text     text
+         (when kind (list :kind kind))))
