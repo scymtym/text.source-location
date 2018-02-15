@@ -1,6 +1,6 @@
-;;;; locations.lisp --- Representation and utilities for source locations.
+;;;; source.lisp --- Sources of text.
 ;;;;
-;;;; Copyright (C) 2012-2018 Jan Moringen
+;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
