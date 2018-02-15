@@ -8,12 +8,19 @@
 
 ;;; `annotation'
 
+(deftype annotation-kind ()
+  `(member :info :note :warning :error))
+
 (defclass annotation (print-items:print-items-mixin)
-  ((location :initarg :location
-             :reader  location)
-   (text     :initarg :text
-             :type    string
-             :reader  text))
+  ((location :initarg  :location
+             :reader   location)
+   (text     :initarg  :text
+             :type     string
+             :reader   text)
+   (kind     :initarg  :kind
+             :type     annotation-kind
+             :reader   kind
+             :initform :note))
   (:default-initargs
    :location (missing-required-initarg 'annotation :location)
    :text     (missing-required-initarg 'annotation :text))
@@ -34,4 +41,10 @@
 
 (defmethod print-items:print-items append ((object annotation))
   `(,@(print-items:print-items (location object))
-      (:annotation ,(text object) " ~A")))
+    (:kind       ,(kind object) " ~A" ((:after :end)))
+    (:annotation ,(text object) " ~A" ((:after :kind)))))
+
+(defun make-annotation (location text)
+  (make-instance 'annotation
+                 :location location
+                 :text     text))

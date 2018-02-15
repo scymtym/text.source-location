@@ -46,6 +46,7 @@
                 :components ((:file       "package")
 
                              (:file       "source")
+                             (:file       "annotation")
 
                              (:file       "lines")
 

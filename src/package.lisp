@@ -60,7 +60,10 @@
   ;; Annotation protocol
   (:export
    #:location
-   #:text)
+   #:text
+   #:kind
+
+   #:make-annotation)
 
   ;; Utilities?
   (:export
