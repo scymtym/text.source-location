@@ -10,6 +10,7 @@
 
 (defclass index-position (print-items:print-items-mixin)
   ((index :initarg :index
+          :type    non-negative-integer
           :reader  index))
   (:default-initargs
    :index (missing-required-initarg 'index-position :index)))
@@ -17,18 +18,20 @@
 (defmethod print-items:print-items append ((object index-position))
   `((:index ,(index object) "~D")))
 
-(defmethod location< ((left index-position) (right index-position))
+(defmethod location< ((left t) (right t))
   (< (index left) (index right)))
 
-(defmethod location= ((left index-position) (right index-position) &key)
+(defmethod location= ((left t) (right t) &key)
   (= (index left) (index right)))
 
 ;;; `line+column-position' TODO is having this a good idea?
 
 (defclass line+column-position (print-items:print-items-mixin)
   ((line   :initarg :line
+           :type    non-negative-integer
            :reader  line)
    (column :initarg :column
+           :type    non-negative-integer
            :reader  column)
    (text   :initarg :text
            :reader  text))              ; TODO good idea?
@@ -211,7 +214,7 @@
         (by-source (make-hash-table :test #'equal)))
     (map nil (lambda (location)
                (let ((source (source (funcall key location))))
-                 (push location (gethash source by-source '()))))
+                 (push location (gethash source by-source '())))) ; TODO using source name is temp hack
          locations)
     by-source))
 
