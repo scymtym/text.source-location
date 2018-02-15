@@ -1,16 +1,15 @@
-(cl:in-package #:text.source-location)
+(cl:in-package #:text.source-location.test)
 
-(make-instance 'annotation :location (make-instance 'location :range (make-range 10 15))
-               :text "declared here")
+(in-suite :text.source-location)
 
 (defvar *location*
-  (make-instance 'location :source-content "foo bar
+  (make-instance 'location
+                 :source (make-source "foo bar
 baz fez
-whoop"
-                 :range (make-range (make-instance 'index-position :index 10)
-                                    (make-instance 'index-position :index 15))))
+whoop")
+                 :range  (make-range 10 15)))
 
-(lines (range *location*) (source-content *location*))
+(lines (range *location*) (content (source *location*)))
 
 #+later (let* ((filename "~/code/citec/citk/recipes-next/distributions/bart-demo.distribution")
        (source (read-file-into-string filename))

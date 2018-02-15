@@ -7,6 +7,7 @@
 (cl:defpackage #:text.source-location.test
   (:use
    #:cl
+   #:let-plus
 
    #:fiveam
 
