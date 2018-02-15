@@ -61,8 +61,9 @@
 
 (defmethod print-source-using-style ((style  style-unicode+ansi-escapes)
                                      (stream t)
-                                     (source t))
-  (format stream "In [35m~A[0m:" source))
+                                     (source source))
+  (let ((name (name source)))
+    (format stream "In ~C[35m~A~C[0m:" #\Escape name #\Escape)))
 
 (defmethod print-line-annotation-using-style
     :around ((style      style-unicode+ansi-escapes)
@@ -76,7 +77,7 @@
                   (:note    "[32m"))
                 stream)
   (unwind-protect
-       (call-method)
-    (write-string "[0m" stream)))
+       (call-next-method)
+    (format stream "~C[0m" #\Escape)))
 
 (setf *style* (make-instance 'style-unicode+ansi-escapes))
