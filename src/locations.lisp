@@ -89,9 +89,11 @@
 (defmethod print-items:print-items append ((object range))
   (let ((start (print-items:print-items (start object)))
         (end   (print-items:print-items (end object))))
-    `((:start     ,start "~/print-items:format-print-items/")
-      (:separator nil    "-"                                 ((:after :start)))
-      (:end       ,end   "~/print-items:format-print-items/" ((:after :separator))))))
+    `((:start           ,start "~/print-items:format-print-items/")
+      (:range-separator nil    "-"
+                        ((:after :start)))
+      (:end             ,end   "~/print-items:format-print-items/"
+                        ((:after :range-separator))))))
 
 (defmethod location< ((left range) (right range))
   (location< (start left) (end right)))

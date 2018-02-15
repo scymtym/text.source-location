@@ -34,4 +34,4 @@
 
 (defmethod print-items:print-items append ((object annotation))
   `(,@(print-items:print-items (location object))
-      (:annotation ,(text object) "~A")))
+      (:annotation ,(text object) " ~A")))
