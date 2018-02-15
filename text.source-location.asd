@@ -6,9 +6,11 @@
 
   :version     (:read-file-form "version-string.sexp")
   :depends-on  ("alexandria"
-                (:version "let-plus"              "0.2")
-                (:version "more-conditions"       "0.1")
-                (:version "utilities.print-items" "0.1"))
+                (:version "let-plus"                      "0.2")
+                (:version "more-conditions"               "0.1")
+                (:version "utilities.print-items"         "0.1")
+
+                (:version "architecture.service-provider" "0.5"))
 
   :components  ((:module     "src"
                  :serial     t
