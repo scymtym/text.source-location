@@ -49,8 +49,9 @@
 
 (defun annotation-bounds (annotations
                           &key
-                          (text          (source-content
-                                          (location (first-elt annotations))))
+                          (text          (content
+                                          (source
+                                           (location (first-elt annotations)))))
                           (info          (text-info text))
                           (context-lines 2))
   (let ((start*          most-positive-fixnum)
@@ -80,8 +81,9 @@
 
 (defun print-annotated-lines (stream annotations &optional colon? at?
                               &key
-                              (text             (source-content
-                                                 (location (first-elt annotations))))
+                              (text             (content
+                                                 (source
+                                                  (location (first-elt annotations)))))
                               (info             (text-info text))
                               line-number-width
                               (context-lines    2)

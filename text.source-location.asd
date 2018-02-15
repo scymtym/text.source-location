@@ -44,6 +44,9 @@
 
   :components ((:module      "test"
                 :components ((:file       "package")
+
+                             (:file       "source")
+
                              (:file       "lines")
 
                              (:file       "smoke"))))

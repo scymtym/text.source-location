@@ -16,7 +16,9 @@
   ;; Source protocol
   (:export
    #:name
-   #:content)
+   #:content
+
+   #:make-source)
 
   ;; TODO where should this go? what should its name be?
   (:export
@@ -51,7 +53,6 @@
   ;; Location protocol
   (:export
    #:source
-   #:source-content ; TODO first class source
    #:range
 
    #:make-location)

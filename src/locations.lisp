@@ -99,26 +99,19 @@
 ;;; `location' class
 
 (defclass location (print-items:print-items-mixin)
-  ((source         :initarg  :source
-                   :accessor source ; TODO read-only?
-                   :initform nil
-                   :documentation
-                   "Stores the source that was being parsed when the
-                    error occurred.")
-   (source-content :initarg  :source-content
-                   :type     (or null string)
-                   :accessor source-content ; TODO read-only?
-                   :initform nil
-                   :documentation
-                   "Stores the source that was being parsed when the
-                    error occurred.")
-   (range          :initarg  :range
-                   :type     (or null range)
-                   :accessor range ; TODO read-only?
-                   :initform nil ; TODO required?
-                   :documentation
-                   "Optionally stores bounds of interesting region
-                    within source string."))
+  ((source :initarg  :source
+           :accessor source ; TODO read-only?
+           :initform nil
+           :documentation
+           "Stores the source that was being parsed when the error
+            occurred.")
+   (range  :initarg  :range
+           :type     (or null range)
+           :accessor range ; TODO read-only?
+           :initform nil ; TODO required?
+           :documentation
+           "Optionally stores bounds of interesting region within
+            source string."))
   (:documentation
    "A location within a source string."))
 
@@ -178,15 +171,17 @@
       (- position (%position-of-newline-before content position))))
 
 (defmethod print-items:print-items append ((object location))
-  (append ; (print-items:print-items (source object))
-   ;; '((:separator nil ": " ((:after  :source-name)
-   ;;                         (:before :start))))
-          (print-items:print-items (range object))))
+  (list* (find :source-name (print-items:print-items (source object))
+               :key #'first)
+         '(:location-separator nil ": " ((:after  :source-name)
+                                         (:before :start)))
+         (print-items:print-items (range object))))
 
 (defun make-location (source start end &key source-content)
   (make-instance 'location
-                 :source source ; (make-source source :content source-content)
-                 :source-content (or source-content (when (stringp source) source))
+                 :source (if (typep source 'source) ; TODO hack
+                             source
+                             (make-source source :content source-content))
                  :range  (make-range start end)))
 
 (defmethod location< ((left location) (right location))
@@ -199,9 +194,7 @@
                       (compare-source-content? t)
                       (compare-bounds?         t))
   (and (or (not compare-source?)
-           (equal (source left) (source right)))
-       (or (not compare-source-content?)
-           (equal (source-content left) (source-content right)))
+           (equal (source left) (source right))) ; TODO source=
        (or (not compare-bounds?)
            (equal (range left) (range right)))))
 
@@ -225,8 +218,9 @@
      &key
      (key                     #'identity)
      (info                    (unless (emptyp locations)
-                                (text-info (source-content
-                                            (funcall key (first-elt locations))))))
+                                (text-info (content
+                                            (source
+                                             (funcall key (first-elt locations)))))))
      (intra-cluster-gap-limit 1))
   (let+ ((key                (ensure-function key))
          (current-start-line nil)

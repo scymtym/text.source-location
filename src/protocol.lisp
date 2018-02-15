@@ -46,8 +46,6 @@
 
 (defgeneric source (location))
 
-(defgeneric source-content (location))
-
 (defgeneric range (location))
 
 ;;; Annotation protocol
