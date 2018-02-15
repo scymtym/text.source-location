@@ -14,13 +14,15 @@
 (defun pretty-column (column)
   column)
 
+;; TODO test this. especially where pretty is different from number, around 100, etc
 (defun line-number-width (number)
-  (cond
-    ((< number 10)    1)
-    ((< number 100)   2)
-    ((< number 1000)  3)
-    ((< number 10000) 4)
-    (t                (length (write-to-string number :radix nil :base 10)))))
+  (let ((pretty (pretty-line number)))
+    (cond
+      ((< pretty 10)    1)
+      ((< pretty 100)   2)
+      ((< pretty 1000)  3)
+      ((< pretty 10000) 4)
+      (t                (length (write-to-string pretty :radix nil :base 10))))))
 
 ;;; Printing lines
 
