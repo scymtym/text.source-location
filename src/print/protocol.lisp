@@ -5,3 +5,7 @@
 (defgeneric print-line-annotation-using-style (style stream width text))
 
 (defgeneric print-line-annotations-using-style (style stream line-number annotations &key start-column end-column line-number-width))
+
+;;; Service
+
+(service-provider:define-service style)

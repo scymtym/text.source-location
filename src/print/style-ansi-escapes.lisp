@@ -3,10 +3,14 @@
 (defclass style-unicode ()
   ())
 
+(service-provider:register-provider/class
+ 'style :unicode :class 'style-unicode)
+
 (defmethod print-source-using-style ((style  style-unicode)
                                      (stream t)
-                                     (source t))
-  (format stream "In ~A:" source))
+                                     (source source))
+  (let ((name (name source)))
+    (format stream "In ~A:" name)))
 
 (defmethod print-line-using-style ((style   style-unicode)
                                    (stream  t)
@@ -59,6 +63,9 @@
 (defclass style-unicode+ansi-escapes (style-unicode)
   ())
 
+(service-provider:register-provider/class
+ 'style :unicode+ansi-escapes :class 'style-unicode+ansi-escapes)
+
 (defmethod print-source-using-style ((style  style-unicode+ansi-escapes)
                                      (stream t)
                                      (source source))
@@ -80,4 +87,9 @@
        (call-next-method)
     (format stream "~C[0m" #\Escape)))
 
-(setf *style* (make-instance 'style-unicode+ansi-escapes))
+(uiop:register-image-restore-hook
+ (lambda ()
+   (setf *style* (service-provider:make-provider
+                  'style (if (interactive-stream-p *terminal-io*)
+                             :unicode+ansi-escapes
+                             :unicode)))))
