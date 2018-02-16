@@ -19,7 +19,7 @@
   )
 
 #+later (defsystem "text.source-location.source-tracking-builder/test"
-  :depends-on ((:version "fiveam"               "1.3")
+  :depends-on ((:version "fiveam"               "1.4")
 
                (:version "text.source-location" (:read-file-form "version-string.sexp")))
   :perform    )

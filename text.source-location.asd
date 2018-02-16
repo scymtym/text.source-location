@@ -40,7 +40,7 @@
   :in-order-to ((test-op (test-op "text.source-location/test"))))
 
 (defsystem "text.source-location/test"
-  :depends-on ((:version "fiveam"               "1.3")
+  :depends-on ((:version "fiveam"               "1.4")
 
                (:version "text.source-location" (:read-file-form "version-string.sexp")))
 
