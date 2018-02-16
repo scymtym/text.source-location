@@ -5,6 +5,59 @@
 
 * TODO Introduction
 
+  Consider the following error report produced using the
+  ~text.source-location~ system.
+
+  It demonstrates the following functionalities
+
+  + Multiple source locations can be annotated
+
+  + Source locations from multiple sources (in this case files) can be
+    referenced
+
+  + For multiple source locations in a single source which are
+    sufficiently far apart, the irrelevant parts are skipped and
+    replaced with ellipsis
+
+  + Horizontal ellipsis
+
+  + Line numbers
+
+  + Annotation for a source location spanning multiple lines
+
+
+  #+BEGIN_EXAMPLE
+    Multiple definitions of variable CONFIGURE.ENABLE-ARGS.
+
+      In /home/jmoringe/code/citec/citk/recipes/templates/ci/autotools.template:
+        3 │
+        4 │     "inherit": [
+        5 │         "autotools-base",
+          │         ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔included here
+        6 │         "warnings"
+        7 │     ],
+
+      In /home/jmoringe/code/citec/citk/recipes/templates/ci/autotools-base.template:
+        23 │         "configure.enable":          "${configure.enable:${mode}|${configure.enable:default}}",
+        24 │         "configure.enable:default":  [],
+        25 │         "configure.enable-args":     "  --enable-${configure.enable} \\\n",
+           │         ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔first definition
+        26 │
+        27 │         "configure.disable":         "${configure.disable:${mode}|${configure.disable:default}}",
+
+         ⁞ ⁞  ⁞
+
+        31 │         "configure.args":            "@{confi…
+        32 │
+           │         ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+        33 │         "configure.enable-args":     [
+        34 │             "  --enable-${configure.enable} \…
+        35 │         ],
+           │ ▔▔▔▔▔▔▔▔▔second definition
+        36 │
+        37 │         "shell.command":             "${shell…
+  #+END_EXAMPLE
+
 * TODO Concepts
 
 * TODO Tutorial
