@@ -6,6 +6,35 @@
 
 (cl:in-package #:text.source-location)
 
+;;; `info-mixin'
+
+(defclass info-mixin ()
+  ((%info ; :type    (or text-info function)
+    :accessor %info))
+  (:default-initargs
+   :info (missing-required-initarg 'info-mixin :info)))
+
+(defmethod shared-initialize :after ((instance   info-mixin)
+                                     (slot-names t)
+                                     &key
+                                     (info nil info-supplied?))
+  (when info-supplied?
+    (setf (%info instance)
+          (etypecase info
+            (string   (curry #'text-info info))
+            (function info)
+            (t ;; text-info
+             info)))))
+
+(defmethod info ((position info-mixin))
+  (let ((info (%info position)))
+    (if (functionp info)
+        (setf (%info position) (funcall info))
+        info)))
+
+(defmethod attach-text ((position info-mixin) (text t))
+  position)
+
 ;;; `index-position'
 
 (defclass index-position (print-items:print-items-mixin)
@@ -18,29 +47,35 @@
 (defmethod print-items:print-items append ((object index-position))
   `((:index ,(index object) "~D")))
 
-(defmethod location< ((left t) (right t))
-  (< (index left) (index right)))
+(defmethod attach-text ((position index-position) (text t))
+  (change-class position 'index+info-position :info text))
 
-(defmethod location= ((left t) (right t) &key)
-  (= (index left) (index right)))
+;;; `index+info-position'
 
-;;; `line+column-position' TODO is having this a good idea?
+(defclass index+info-position (index-position info-mixin)
+  ())
+
+(defmethod line ((position index+info-position))
+  (nth-value 0 (line+column position (info position))))
+
+(defmethod column ((position index+info-position))
+  (nth-value 1 (line+column position (info position))))
+
+;;; `line+column-position'
 
 (defclass line+column-position (print-items:print-items-mixin)
-  ((line   :initarg :line
-           :type    non-negative-integer
-           :reader  line)
-   (column :initarg :column
-           :type    non-negative-integer
-           :reader  column)
-   (text   :initarg :text
-           :reader  text))              ; TODO good idea?
+  ((line   :initarg  :line
+           :type     non-negative-integer
+           :reader   line)
+   (column :initarg  :column
+           :type     non-negative-integer
+           :reader   column))
   (:default-initargs
    :line   (missing-required-initarg 'line+column-position :line)
    :column (missing-required-initarg 'line+column-position :column)))
 
 (defmethod index ((position line+column-position))
-  (line+column->index (line position) (column position) (text position)))
+  (error "not available"))
 
 (defmethod print-items:print-items append ((object line+column-position))
   `((:line      ,(line object)   "~D")
@@ -61,6 +96,39 @@
   (and (= (line left) (line right))
        (= (column left) (column right))))
 
+(defmethod attach-text ((position line+column-position) (text t))
+  (change-class position 'line+column+info-position :info text))
+
+;;; `line+column+info-position'
+
+(defclass line+column+info-position (line+column-position
+                                     info-mixin)
+  ((%info ; :type    (or text-info function)
+          :accessor %info))
+  (:default-initargs
+   :info (missing-required-initarg 'line+column+info-position :info)))
+
+(defmethod shared-initialize :after ((instance   line+column+info-position)
+                                     (slot-names t)
+                                     &key
+                                     (info nil info-supplied?))
+  (when info-supplied?
+    (setf (%info instance)
+          (etypecase info
+            (string   (curry #'text-info info))
+            (function info)
+            (t ;; text-info
+             info)))))
+
+(defmethod info ((position line+column+info-position))
+  (let ((info (%info position)))
+    (if (functionp info)
+        (setf (%info position) (funcall info))
+        info)))
+
+(defmethod index ((position line+column+info-position))
+  (line+column->index (line position) (column position) (info position)))
+
 ;;; `range'
 
 (defclass range (print-items:print-items-mixin)
@@ -80,10 +148,14 @@
 ;; TODO assert (location< start end)
 
 (declaim (inline make-range))
-(defun make-range (start &optional (end start))
+(defun make-range (start &optional (end start) info)
   (let+ (((&flet make-bound (bound)
             (typecase bound
-              (integer (make-instance 'index-position :index bound))
+              (integer (if info
+                           (make-instance 'index+info-position
+                                          :index bound
+                                          :info  info)
+                           (make-instance 'index-position :index bound)))
               (t       bound)))))
     (make-instance 'range
                    :start (make-bound start)
@@ -101,19 +173,24 @@
 (defmethod location< ((left range) (right range))
   (location< (start left) (end right)))
 
+(defmethod attach-text ((position range) (text t))
+  (attach-text (start position) text)
+  (attach-text (end   position) text)
+  position)
+
 ;;; `location' class
 
 (defclass location (print-items:print-items-mixin)
   ((source :initarg  :source
-           :accessor source ; TODO read-only?
+           :accessor source             ; TODO read-only?
            :initform nil
            :documentation
            "Stores the source that was being parsed when the error
             occurred.")
    (range  :initarg  :range
            :type     (or null range)
-           :accessor range ; TODO read-only?
-           :initform nil ; TODO required?
+           :accessor range              ; TODO read-only?
+           :initform nil                ; TODO required?
            :documentation
            "Optionally stores bounds of interesting region within
             source string."))
@@ -183,11 +260,12 @@
          (print-items:print-items (range object))))
 
 (defun make-location (source start end &key source-content)
-  (make-instance 'location
-                 :source (if (typep source 'source) ; TODO hack
-                             source
-                             (make-source source :content source-content))
-                 :range  (make-range start end)))
+  (let ((source (if (typep source 'source) ; TODO hack
+                    source
+                    (make-source source :content source-content))))
+    (make-instance 'location
+                   :source source
+                   :range  (make-range start end (content source)))))
 
 (defmethod location< ((left location) (right location))
   (location< (start left) (start right)))
