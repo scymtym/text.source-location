@@ -43,7 +43,10 @@
   ((source :initarg  :source
            :accessor source)
    (target :initarg  :target
-           :reader   target))
+           :reader   target)
+   (callback :initarg :callback
+             :reader callback
+             :initform nil))
   (:default-initargs
    :source (missing-required-initarg 'source-tracking-builder :source)
    :target (missing-required-initarg 'source-tracking-builder :target)))
@@ -86,4 +89,8 @@
   ; (log:info kind node)
   (let+ (; ((&structure partial-node- node source) node)
          (node1 (bp:finish-node (target builder) kind (partial-node-node node))))
-    (model.transform.trace:recording-transform (() (partial-node-location node)) node1)))
+    (model.transform.trace:recording-transform (() (partial-node-location node)) node1)
+    #+later? (when-let ((location (partial-node-location node))
+               (callback (callback builder)))
+      (funcall callback node1 location))
+    node1))

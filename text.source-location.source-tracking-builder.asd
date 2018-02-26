@@ -11,7 +11,9 @@
 
                 (:version "architecture.builder-protocol" "0.7")
 
-                (:version "text.source-location"          (:read-file-form "version-string.sexp")))
+                (:version "text.source-location"          (:read-file-form "version-string.sexp"))
+
+                "model.transform.trace")
 
   :components  ((:module     "src"
                  :components ((:file       "source-tracking-builder"))))
