@@ -56,15 +56,15 @@
      (line-number-width (line-number-width line-number)))
   (declare (ignore end-column))
   (let+ (((&flet fringe (&optional fresh-line?)
-            (format stream "~:[~;~@:_~]~@[~V@T │ ~]"
-                    fresh-line? line-number-width))))
+            (format stream "~:[~;~@:_~]~@[~V@T ~C ~]"
+                    fresh-line? line-number-width (if (< (random 2) 1) #\┃ #\│)))))
     (fringe)
     (loop :for previous = (max 0 (1- start-column)) :then (+ end (length (text annotation)))
           :for (start end annotation) :in annotations
           :when (> previous start)
           :do (fringe t)
               (setf previous (max 0 (1- start-column)))
-          :do (format stream "~V@T" (- start previous))
+          :do (format stream "~V@T" (max 0 (- start previous)))
               (print-line-annotation-using-style
                style stream (- end start) position annotation)
           :finally (pprint-newline :mandatory stream))))

@@ -116,8 +116,13 @@
                                       (min line-length (- end-index line-start))
                                       annotation
                                       :above)
-                       :when (<= line-start end-index line-end)
-                       :collect (list (max 0 (- start-index line-start))
+                       :when (<= (1+ start-index) line-start end-index line-end)
+                       :collect (list 0 ; TODO would be good to use same column as start-index
+                                      (- end-index line-start)
+                                      annotation
+                                      :below)
+                       :when (<= line-start start-index end-index line-end)
+                       :collect (list (- start-index line-start)
                                       (- end-index line-start)
                                       annotation
                                       :below))
@@ -134,20 +139,23 @@
                (print-source stream source)
                (format stream "~@:_~2@T")
                (pprint-logical-block (stream annotations)
-                 (loop :with last-location = (location (lastcar (lastcar annotations)))
-                       :with text-info = (text-info (content (source last-location)))
-                       :with line-number-width
-                             = (line-number-width
-                                (+ (nth-value
-                                    4 (line-bounds (range last-location) text-info))
-                                   context-lines))
-                       :for  (annotation next) :on annotations
-                       :do   (print-annotated-lines
-                              stream annotation nil nil
-                              :line-number-width line-number-width
-                              :context-lines     context-lines)
-                       :when next
-                       :do   (format stream "~@:_~V<⁞~> ⁞  ⁞~@:_~@:_"
-                                     line-number-width)))
+                 (loop :with end-location = (extremum (map 'list #'location (lastcar annotations))
+                                                      (complement #'location<)
+                                                      :key #'end)
+                    :with text-info = (text-info (content (source end-location)))
+                    :with line-number-width
+                      = (line-number-width
+                         (+ (nth-value
+                             4 (line-bounds (range end-location) text-info))
+                            context-lines))
+                    :for  (annotation next) :on annotations
+                    :do   (print-annotated-lines
+                           stream annotation nil nil
+                           :line-number-width line-number-width
+                           :context-lines     context-lines)
+                    :when next
+                    :do   (format stream "~@:_~V<⁞~> ⁞  ⁞~@:_~@:_"
+                                  line-number-width)))
                (pprint-newline :mandatory stream))
-         clusters)))
+         clusters)
+    (force-output *trace-output*)))
