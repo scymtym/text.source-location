@@ -53,6 +53,10 @@
   (make-instance 'source-tracking-builder :source source :target target))
 
 (defmethod make-location ((builder source-tracking-builder)
+                          (bounds  null))
+  nil)
+
+(defmethod make-location ((builder source-tracking-builder)
                           (bounds  cons))
   (let+ (((start . end) bounds))
     (text.source-location:make-location (source builder) start end)))
