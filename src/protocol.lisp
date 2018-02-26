@@ -26,7 +26,17 @@
   (:documentation
    "TODO"))
 
+;;; Default behavior
+
+(defmethod location< ((left t) (right t))
+  (< (index left) (index right)))
+
+(defmethod location= ((left t) (right t) &key)
+  (= (index left) (index right)))
+
 ;;; Position protocol
+
+(defgeneric index (position))
 
 ;;; Range protocol
 
