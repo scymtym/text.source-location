@@ -21,7 +21,7 @@
    fill pointer."
   (declare (optimize speed (debug 1) (safety 1)))
   (if (zerop (length text))
-      (make-newline-vector 0)
+      (make-newline-vector 0) ; TODO use newlines, set fill pointer
       (loop :with newlines = (or newlines
                                  (make-newline-vector))
             :for previous = 0 :then next

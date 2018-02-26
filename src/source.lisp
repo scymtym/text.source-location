@@ -29,7 +29,7 @@
             (make-instance 'source :name name :content content)))
          ((&flet stream-name (stream)
             (or (ignore-errors (pathname stream)) "<stream>"))))
-    (typecase source
+    (etypecase source
       (string   (make-it "<string>"           (or content source)))
       (stream   (make-it (stream-name source) content))
       (pathname (make-it source               content)))))
