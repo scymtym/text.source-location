@@ -1,0 +1,16 @@
+#+TITLE:    text.source-location README
+#+AUTHOR:   Jan Moringen
+#+EMAIL:    jmoringe@techfak.uni-bielefeld.de
+#+LANGUAGE: en
+
+* TODO Introduction
+
+* TODO Concepts
+
+* TODO Tutorial
+
+* TODO Dictionary
+
+* settings                                                         :noexport:
+#+OPTIONS: num:nil
+#+SEQ_TODO: TODO STARTED | DONE
