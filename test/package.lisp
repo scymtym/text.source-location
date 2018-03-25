@@ -17,7 +17,7 @@
    #:run-tests)
 
   (:documentation
-   "Unit test for the text.source-location system."))
+   "Unit tests for the text.source-location system."))
 
 (cl:in-package #:text.source-location.test)
 

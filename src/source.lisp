@@ -17,7 +17,7 @@
 
 (defmethod print-items:print-items append ((object source))
   (let* ((content           (content object))
-         (printable-content (typecase content
+         (printable-content (typecase content ; TODO make a function, put in util.lisp
                               (string (substitute-if #\. (complement #'graphic-char-p)
                                                      (subseq content 0 (min 20 (length content))))))))
     `((:source-name ,(name object) "~A")
