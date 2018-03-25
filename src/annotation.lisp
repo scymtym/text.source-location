@@ -1,4 +1,4 @@
-;;;; annotation.lisp --- .
+;;;; annotation.lisp --- Locations with text annotations.
 ;;;;
 ;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;

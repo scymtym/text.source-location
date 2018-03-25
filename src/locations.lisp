@@ -234,24 +234,6 @@
 (defmethod bounds ((range location))
   (bounds (range range)))
 
-#+no (macrolet
-    ((define-method (name &body body)
-       `(defmethod ,name ((info location)
-                          &key (of :start))
-          (when-let ((content (source-content info))
-                     (bounds  (bounds info)))
-            (locally (declare (type bounds/cons bounds)))
-            (let ((position (ecase of
-                              (:start (car bounds))
-                              (:end   (cdr bounds)))))
-              (when position
-                ,@body))))))
-
-  (define-method line
-      (count #\Newline content :end position))
-  (define-method column
-      (- position (%position-of-newline-before content position))))
-
 (defmethod print-items:print-items append ((object location))
   (list* (find :source-name (print-items:print-items (source object))
                :key #'first)
