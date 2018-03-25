@@ -1,5 +1,5 @@
 (defsystem "text.source-location.source-tracking-builder"
-  :description "TODO"
+  :description "A builder that attaches source locations to nodes"
   :license     "LLGPLv3" ; see COPYING for details
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
