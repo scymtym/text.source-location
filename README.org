@@ -3,7 +3,69 @@
 #+EMAIL:    jmoringe@techfak.uni-bielefeld.de
 #+LANGUAGE: en
 
-* TODO Introduction
+* STARTED Introduction
+
+  The purpose of the ~text.source-location~ system is representing,
+  managing, presenting and annotating locations in source text. It is
+  intended to be used in programs dealing with source text such as
+  interpreters, compilers and implementations of domain specific
+  languages.
+
+  Noteworthy features of the system are:
+
+  + Positions can be represented as offsets or line-column pairs as
+    well as with or without the associated source. If the source is
+    available, conversions between the different representations can
+    be performed.
+
+  + Annotations can be rendered alongside the original source text
+    with highlighting, restriction to a relevant excerpt and line
+    numbers.
+
+  + Multiple annotations can be presented together in a meaningful
+    way:
+
+    + Annotations that refer to locations in different sources, are
+      grouped by source.
+
+    + For each source, suitable excerpts are computed for presenting
+      the annotations in the respective source. For example, locations
+      which are close to each other in the source text are presented
+      in single excerpt.
+
+  An examples probably illustrates these features better:
+
+  #+BEGIN_EXAMPLE
+    Multiple definitions of variable configure.enable-args.
+
+      In templates/ci/autotools.template:
+        3 │
+        4 │     "include": [
+        5 │         "autotools-base",
+          │         ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔included here
+        6 │         "warnings"
+        7 │     ],
+
+      In templates/ci/autotools-base.template:
+         23 │         "enable":          "${enable:${mode}|${enable:default}}",
+         24 │         "enable:default":  [],
+         25 │         "enable-args":     "  --enable-${enable} \\\n",
+            │         ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔first definition
+         26 │
+         27 │         "disable":         "${disable:${mode}|${disable:default}}",
+
+          ⁞ ⁞  ⁞
+
+        131 │         "args":            "@{enabl…
+        132 │
+            │         ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+        133 │         "enable-args":     [
+        134 │             "  --enable-${enable} \…
+        135 │         ],
+            │ ▔▔▔▔▔▔▔▔▔second definition
+        136 │
+        137 │         "shell.command":   "${shell…
+  #+END_EXAMPLE
 
 * STARTED Concepts
 
