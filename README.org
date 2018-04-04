@@ -5,7 +5,41 @@
 
 * TODO Introduction
 
-* TODO Concepts
+* STARTED Concepts
+
+  + sequence of characters :: E.g. a string (ignoring Unicode issues)
+
+  + source :: A description (e.g. filename, buffer name) and,
+              optionally, associated *sequence of characters*.
+
+  + index :: Given a *sequence of characters*, before the first
+             character, between two adjacent characters or after the
+             last character. The index before the first character
+             is 0.
+
+  + position :: Abstract version of *index*.
+
+                May be encoded as an *index* or as a *line* and a
+                *column*.
+
+  + range :: A pair of *positions* bounding a contiguous sub-sequence
+             of a *sequence of characters*.
+
+  + location :: A *source* and a *range*.
+
+  + annotation :: A *location* and an annotation text.
+
+  + line :: Vertical offset in lines from the beginning of the
+            *sequence of characters*.
+
+    + Internal representation :: [0, ∞)
+    + User-facing represetation :: [1, ∞)
+
+  + column :: A horizontal offset in characters from the beginning of
+              the *line*.
+
+    + Internal representation :: [0, ∞)
+    + User-facing represetatnion :: [0, ∞)
 
 * TODO Tutorial
 
