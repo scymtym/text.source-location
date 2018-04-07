@@ -24,7 +24,8 @@
 
                (:version "text.source-location.lookup" (:read-file-form "version-string.sexp")))
 
-  :components ((:module      "test"
+  :components ((:module     "test"
+                :pathname   "test/lookup"
                 :components ((:file       "package")
                              (:file       "protocol")
                              (:file       "index"))))
