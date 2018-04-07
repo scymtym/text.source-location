@@ -30,10 +30,10 @@
 
 ;;; Index mutation protocol
 
-(defmethod add! (location index)
+(defgeneric add! (location index)
   (:documentation
    "Add LOCATION to INDEX. Return updated INDEX."))
 
-(defmethod remove! (location index)
+(defgeneric remove! (location index)
   (:documentation
    "Remove LOCATION from INDEX. Return updated INDEX."))

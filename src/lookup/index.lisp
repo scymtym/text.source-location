@@ -4,6 +4,9 @@
   ((locations :accessor %locations
               :initform '())))
 
+(defun make-index ()
+  (make-instance 'index))
+
 (defmethod lookup ((location t) (index index) &key if-overlap)
   (reduce (lambda+ (result (range . value))
             (if (location-in? location range)

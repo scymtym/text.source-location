@@ -17,4 +17,8 @@
   ;; Index mutation protocol
   (:export
    #:add!
-   #:remove!))
+   #:remove!)
+
+  ;; Index creation
+  (:export
+   #:make-index))
