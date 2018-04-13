@@ -39,14 +39,11 @@
 
 ;;;
 
-(defclass %source-tracking-builder () ; TODO rename this one to source-tracking-builder
+(defclass %source-tracking-builder (bp:forwarding-mixin)
   ((source :initarg  :source
-           :accessor source)
-   (target :initarg  :target
-           :reader   target))
+           :accessor source))
   (:default-initargs
-   :source (missing-required-initarg '%source-tracking-builder :source)
-   :target (missing-required-initarg '%source-tracking-builder :target)))
+   :source (missing-required-initarg '%source-tracking-builder :source)))
 
 (defmethod make-location ((builder %source-tracking-builder)
                           (bounds  null))
@@ -60,7 +57,7 @@
 (defmethod bp:make-node ((builder %source-tracking-builder)
                          (kind    t)
                          &rest initargs &key bounds)
-  (let ((node     (apply #'bp:make-node (target builder) kind
+  (let ((node     (apply (call-next-method) builder kind
                          (remove-from-plist initargs :bounds)))
         (location (make-location builder bounds)))
     (make-partial-node node location)))
@@ -72,8 +69,7 @@
                       &rest initargs &key)
                                         ; (log:info left right)
   (let+ (((&structure partial-node- node) left))
-    (setf node (apply #'bp:relate (target builder) relation node right
-                      initargs))
+    (setf node (call-next-method))
     left))
 
 ;;; The builder
