@@ -5,57 +5,66 @@
 
 * STARTED Introduction
 
-  Consider the following error report produced using the
-  ~text.source-location~ system.
+  The purpose of the ~text.source-location~ system is representing,
+  managing, presenting and annotating locations in source text. It is
+  intended to be used in programs dealing with source text such as
+  interpreters, compilers and implementations of domain specific
+  languages.
 
-  It demonstrates the following functionalities
+  Noteworthy features of the system are:
 
-  + Multiple source locations can be annotated
+  + Positions can be represented as offsets or line-column pairs as
+    well as with or without the associated source. If the source is
+    available, conversions between the different representations can
+    be performed.
 
-  + Source locations from multiple sources (in this case files) can be
-    referenced
+  + Annotations can be rendered alongside the original source text
+    with highlighting, restriction to a relevant excerpt and line
+    numbers.
 
-  + For multiple source locations in a single source which are
-    sufficiently far apart, the irrelevant parts are skipped and
-    replaced with ellipsis
+  + Multiple annotations can be presented together in a meaningful
+    way:
 
-  + Horizontal ellipsis
+    + Annotations that refer to locations in different sources, are
+      grouped by source.
 
-  + Line numbers
+    + For each source, suitable excerpts are computed for presenting
+      the annotations in the respective source. For example, locations
+      which are close to each other in the source text are presented
+      in single excerpt.
 
-  + Annotation for a source location spanning multiple lines
-
+  An examples probably illustrates these features better:
 
   #+BEGIN_EXAMPLE
-    Multiple definitions of variable CONFIGURE.ENABLE-ARGS.
+    Multiple definitions of variable configure.enable-args.
 
-      In /home/jmoringe/code/citec/citk/recipes/templates/ci/autotools.template:
+      In templates/ci/autotools.template:
         3 │
-        4 │     "inherit": [
+        4 │     "include": [
         5 │         "autotools-base",
           │         ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔included here
         6 │         "warnings"
         7 │     ],
 
-      In /home/jmoringe/code/citec/citk/recipes/templates/ci/autotools-base.template:
-        23 │         "configure.enable":          "${configure.enable:${mode}|${configure.enable:default}}",
-        24 │         "configure.enable:default":  [],
-        25 │         "configure.enable-args":     "  --enable-${configure.enable} \\\n",
-           │         ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔first definition
-        26 │
-        27 │         "configure.disable":         "${configure.disable:${mode}|${configure.disable:default}}",
+      In templates/ci/autotools-base.template:
+         23 │         "enable":          "${enable:${mode}|${enable:default}}",
+         24 │         "enable:default":  [],
+         25 │         "enable-args":     "  --enable-${enable} \\\n",
+            │         ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔first definition
+         26 │
+         27 │         "disable":         "${disable:${mode}|${disable:default}}",
 
-         ⁞ ⁞  ⁞
+          ⁞ ⁞  ⁞
 
-        31 │         "configure.args":            "@{confi…
-        32 │
-           │         ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-        33 │         "configure.enable-args":     [
-        34 │             "  --enable-${configure.enable} \…
-        35 │         ],
-           │ ▔▔▔▔▔▔▔▔▔second definition
-        36 │
-        37 │         "shell.command":             "${shell…
+        131 │         "args":            "@{enabl…
+        132 │
+            │         ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+        133 │         "enable-args":     [
+        134 │             "  --enable-${enable} \…
+        135 │         ],
+            │ ▔▔▔▔▔▔▔▔▔second definition
+        136 │
+        137 │         "shell.command":   "${shell…
   #+END_EXAMPLE
 
 * STARTED Concepts
@@ -63,7 +72,7 @@
   + sequence of characters :: E.g. a string (ignoring Unicode issues)
 
   + source :: A description (e.g. filename, buffer name) and,
-              optionally, associated content.
+              optionally, associated *sequence of characters*.
 
   + index :: Given a *sequence of characters*, before the first
              character, between two adjacent characters or after the
@@ -76,19 +85,20 @@
                 *column*.
 
   + range :: A pair of *positions* bounding a contiguous sub-sequence
-             of a sequence.
+             of a *sequence of characters*.
 
-  + location :: A *source* and a *range*
+  + location :: A *source* and a *range*.
 
   + annotation :: A *location* and an annotation text.
 
-  + line ::
+  + line :: Vertical offset in lines from the beginning of the
+            *sequence of characters*.
 
     + Internal representation :: [0, ∞)
     + User-facing represetation :: [1, ∞)
 
   + column :: A horizontal offset in characters from the beginning of
-              the line.
+              the *line*.
 
     + Internal representation :: [0, ∞)
     + User-facing represetatnion :: [0, ∞)
