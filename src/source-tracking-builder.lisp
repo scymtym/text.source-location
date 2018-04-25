@@ -15,7 +15,8 @@
    #:source
    #:target
 
-   #:make-location)
+   #:make-location
+   #:record-location)
 
   ;; Source tracking builder creation protocol
   (:export
@@ -30,17 +31,21 @@
   (:documentation
    "TODO"))
 
+(defgeneric record-location (builder node location)
+  (:documentation
+   "TODO"))
+
 ;;; Helper structure
 
 (defstruct (partial-node
-             (:constructor make-partial-node (node location)))
+            (:constructor make-partial-node (node location)))
   (node     nil)
   (location nil :read-only t))
 
 ;;;
 
-(defclass %source-tracking-builder (bp:forwarding-mixin)
-  ((source :initarg  :source
+(defclass %source-tracking-builder (bp:forwarding-mixin) ; TODO rename this one to source-tracking-builder
+  ((source :initarg  :source ; TODO these slot names suggest some kind of symmetric relationship which is not the case
            :accessor source))
   (:default-initargs
    :source (missing-required-initarg '%source-tracking-builder :source)))
@@ -57,19 +62,27 @@
 (defmethod bp:make-node ((builder %source-tracking-builder)
                          (kind    t)
                          &rest initargs &key bounds)
-  (let ((node     (apply (call-next-method) builder kind
+  (let ((node     (apply #'call-next-method builder kind
                          (remove-from-plist initargs :bounds)))
         (location (make-location builder bounds)))
     (make-partial-node node location)))
+
+(defmethod bp:finish-node ((builder %source-tracking-builder)
+                           (kind    t)
+                           (node    partial-node))
+  (let+ (; ((&structure partial-node- node location) node)
+         (node1 (bp:finish-node (bp:target builder) kind (partial-node-node node))))
+    (record-location builder node1 (partial-node-location node))
+    node1))
 
 (defmethod bp:relate ((builder  %source-tracking-builder)
                       (relation t)
                       (left     partial-node)
                       (right    t)
                       &rest initargs &key)
-                                        ; (log:info left right)
   (let+ (((&structure partial-node- node) left))
-    (setf node (call-next-method))
+    (setf node (apply #'bp:relate (bp:target builder) relation node right
+                      initargs))
     left))
 
 ;;; The builder
@@ -81,14 +94,10 @@
 (defun make-source-tracking-builder (source target)
   (make-instance 'source-tracking-builder :source source :target target))
 
-(defmethod bp:finish-node ((builder source-tracking-builder)
-                           (kind    t)
-                           (node    partial-node))
-  ;; (log:info kind node)
-  (let+ (; ((&structure partial-node- node source) node)
-         (node1 (bp:finish-node (target builder) kind (partial-node-node node))))
-    (model.transform.trace:recording-transform (() (partial-node-location node)) node1)
-    node1))
+(defmethod record-location ((builder  source-tracking-builder)
+                            (node     t)
+                            (location t))
+  (model.transform.trace:recording-transform (() location) node))
 
 ;;; `callback-source-tracking-builder'
 
@@ -97,12 +106,9 @@
              :reader callback
              :initform nil)))
 
-(defmethod bp:finish-node ((builder callback-source-tracking-builder)
-                           (kind    t)
-                           (node    partial-node))
-  ;; (log:info kind node)
-  (let ((node1 (bp:finish-node (target builder) kind (partial-node-node node))))
-    (when-let ((location (partial-node-location node))
-               (callback (callback builder)))
-      (funcall callback node1 location))
-    node1))
+(defmethod record-location ((builder  callback-source-tracking-builder)
+                            (node     t)
+                            (location t))
+  (when-let ((location location)
+             (callback (callback builder)))
+    (funcall callback node location)))

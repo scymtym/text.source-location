@@ -1,6 +1,7 @@
 (cl:defpackage #:text.source-location.lookup
   (:use
    #:cl
+   #:alexandria
    #:let-plus)
 
   (:local-nicknames
@@ -12,7 +13,8 @@
 
   ;; Lookup protocol
   (:export
-   #:lookup)
+   #:lookup
+   #:in)
 
   ;; Index mutation protocol
   (:export

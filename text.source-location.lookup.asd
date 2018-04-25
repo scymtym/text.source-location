@@ -6,9 +6,11 @@
 
   :version     (:read-file-form "version-string.sexp")
   :depends-on  ("alexandria"
-                (:version "let-plus"             "0.2")
+                (:version "let-plus"              "0.2")
 
-                (:version "text.source-location" (:read-file-form "version-string.sexp")))
+                (:version "utilities.print-items" "0.1")
+
+                (:version "text.source-location"  (:read-file-form "version-string.sexp")))
 
   :components  ((:module     "lookup"
                  :pathname   "src/lookup"
@@ -29,5 +31,6 @@
                 :components ((:file       "package")
                              (:file       "protocol")
                              (:file       "index"))))
+
   :perform    (test-op (operation component)
                 (symbol-call '#:text.source-location.lookup.test '#:run-tests)))

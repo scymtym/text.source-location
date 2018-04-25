@@ -10,13 +10,17 @@
 
 (defmethod location-in? ((location t) (range sloc:range)) ; TODO add to sloc package?
   (let+ (((&values start end) (sloc:bounds range)))
-    (and (or (sloc:location< start location)
+    (and (or (sloc:location< start location) ; TODO location<=
              (sloc:location= start location))
-         (sloc:location< location end))))
+         (or (sloc:location< location end) ; TODO this should be < in some cases and <= in others. keyword parameter?
+             (sloc:location= location end)))))
 
 (defmethod location-in? ((location sloc:range) (range sloc:range))
   (let+ (((&values start end) (sloc:bounds location)))
     (and (location-in? start range) (location-in? end range))))
+
+(defmethod location-in? ((location sloc:location) (range t))
+  (location-in? (sloc:range location) range))
 
 (defmethod location-in? ((location t) (range sloc:location))
   ;; TODO compare source if applicable?
@@ -24,9 +28,22 @@
 
 ;;; Lookup protocol
 
-(defgeneric lookup (location index &key if-overlap)
+;; TODO rename to `at'?
+(defgeneric lookup (location index &key if-multiple)
   (:documentation
-   "Return a sequence of locations in INDEX that contain LOCATION."))
+   "Return locations in INDEX that contain LOCATION.
+
+    In cases multiple locations in INDEX contain LOCATION, IF-MULTIPLE
+    is called on the sequence containing these locations to compute
+    the return value."))
+
+(defgeneric in (range index &key if-multiple)
+  (:documentation
+   "Return locations in INDEX contained in RANGE.
+
+    In cases multiple locations in INDEX are contained in RANGE,
+    IF-MULTIPLE is called on the sequence containing these locations
+    to compute the return value."))
 
 ;;; Index mutation protocol
 

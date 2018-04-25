@@ -234,6 +234,11 @@
 (defmethod bounds ((range location))
   (bounds (range range)))
 
+(defmethod content ((source location))
+  (subseq (content (source source))
+          (index (start source)) ; TODO can we use `bounds' here?
+          (index (end source))))
+
 (defmethod print-items:print-items append ((object location))
   (list* (find :source-name (print-items:print-items (source object))
                :key #'first)

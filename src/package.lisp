@@ -13,13 +13,6 @@
   (:import-from #:more-conditions
    #:missing-required-initarg)
 
-  ;; Source protocol
-  (:export
-   #:name
-   #:content
-
-   #:make-source)
-
   ;; TODO where should this go? what should its name be?
   (:export
    #:text-info
@@ -42,11 +35,19 @@
    #:line
    #:column)
 
+  ;; Source protocol
+  (:export
+   #:name
+   #:content
+
+   #:make-source)
+
   ;; Range protocol
   (:export
    #:start
    #:end
    #:bounds
+   #:size
 
    #:make-range)
 

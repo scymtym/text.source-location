@@ -1,4 +1,4 @@
-;;;; protocol.lisp --- Protocol function provided by the text.source-location system.
+;;;; protocol.lisp --- Protocol functions provided by the text.source-location system.
 ;;;;
 ;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
@@ -10,11 +10,11 @@
 
 (defgeneric name (source)
   (:documentation
-   "TODO"))
+   "Return the name of SOURCE."))
 
 (defgeneric content (source)
   (:documentation
-   "TODO"))
+   "Return the content of SOURCE or NIL if not available."))
 
 ;;; Location comparison protocol
 
@@ -42,21 +42,38 @@
 
 (defgeneric start (range)
   (:documentation
-   "TODO"))
+   "Return the start position of RANGE."))
 
 (defgeneric end (range)
   (:documentation
-   "TODO"))
+   "Return the end position of RANGE."))
 
 (defgeneric bounds (range)
   (:documentation
-   "TODO"))
+   "Return the start and end positions of RANGE as two values."))
+
+(defgeneric size (range)) ; TODO good name?
+
+;;; Default behavior
+
+(defmethod size ((range t))
+  (- (index (end range)) (index (start range))))
 
 ;;; Location protocol
 
-(defgeneric source (location))
+(defgeneric source (location)
+  (:documentation
+   "Return the source of LOCATION.
 
-(defgeneric range (location))
+    The returned object can be used with the source protocol."))
+
+(defgeneric range (location)
+  (:documentation
+   "Return the range of LOCATION.
+
+    The returned object can be used with the range protocol."))
+
+;;; There should be a `content' method on `location' implementations
 
 ;;; Annotation protocol
 
