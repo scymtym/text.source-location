@@ -13,7 +13,8 @@
     (and (or (sloc:location< start location) ; TODO location<=
              (sloc:location= start location))
          (or (sloc:location< location end) ; TODO this should be < in some cases and <= in others. keyword parameter?
-             (sloc:location= location end)))))
+             ; (sloc:location= location end)
+             ))))
 
 (defmethod location-in? ((location sloc:range) (range sloc:range))
   (let+ (((&values start end) (sloc:bounds location)))
