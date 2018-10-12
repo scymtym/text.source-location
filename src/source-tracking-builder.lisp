@@ -45,7 +45,7 @@
 ;;;
 
 (defclass %source-tracking-builder (bp:forwarding-mixin) ; TODO rename this one to source-tracking-builder
-  ((source :initarg  :source ; TODO these slot names suggest some kind of symmetric relationship which is not the case
+  ((source :initarg  :source
            :accessor source))
   (:default-initargs
    :source (missing-required-initarg '%source-tracking-builder :source)))
@@ -102,8 +102,8 @@
 ;;; `callback-source-tracking-builder'
 
 (defclass callback-source-tracking-builder (%source-tracking-builder)
-  ((callback :initarg :callback
-             :reader callback
+  ((callback :initarg  :callback
+             :reader   callback
              :initform nil)))
 
 (defmethod record-location ((builder  callback-source-tracking-builder)

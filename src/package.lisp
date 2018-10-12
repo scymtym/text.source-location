@@ -40,6 +40,7 @@
    #:name
    #:content
 
+   #:source
    #:make-source)
 
   ;; Range protocol
@@ -49,6 +50,7 @@
    #:bounds
    #:size
 
+   #:range
    #:make-range)
 
   ;; Location protocol
@@ -56,6 +58,7 @@
    #:source
    #:range
 
+   #:location
    #:make-location)
 
   ;; Annotation protocol
@@ -64,6 +67,7 @@
    #:text
    #:kind
 
+   #:annotation
    #:make-annotation)
 
   ;; Utilities?

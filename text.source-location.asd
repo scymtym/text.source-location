@@ -16,11 +16,16 @@
 
                               (:file       "protocol")
 
+                              (:file       "util")
+
                               (:file       "source")
                               (:file       "locations")
+                              (:file       "range")
                               (:file       "annotation")
 
-                              (:file       "lines")))
+                              (:file       "lines")
+
+                              (:file       "cluster")))
 
                 (:static-file "COPYING")
                 (:static-file "README.org"))

@@ -1,0 +1,10 @@
+(cl:in-package #:text.source-location)
+
+(defun printable-content (string &key (length-limit 20))
+  (let+ ((length (length string))
+         ((&values end shortened?) (if (<= length length-limit)
+                                       (values length       nil)
+                                       (values length-limit t))))
+    (values (substitute-if #\. (complement #'graphic-char-p)
+                           (subseq string 0 end))
+            shortened?)))

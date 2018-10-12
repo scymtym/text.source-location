@@ -16,13 +16,16 @@
    :content (missing-required-initarg 'source :content)))
 
 (defmethod print-items:print-items append ((object source))
-  (let* ((content           (content object))
-         (printable-content (typecase content ; TODO make a function, put in util.lisp
-                              (string (substitute-if #\. (complement #'graphic-char-p)
-                                                     (subseq content 0 (min 20 (length content))))))))
+  (let+ ((content           (content object))
+         ((&values printable-content shortened?)
+          (typecase content
+            (string (printable-content content)))))
     `((:source-name ,(name object) "~A")
       ,@(when printable-content
-          `((:source-content ,printable-content " \"~A\"" ((:after :source-name))))))))
+          `((:open           nil                " \""      ((:after :source-name)))
+            (:source-content ,printable-content "~A"       ((:after :open)))
+            (:shortened?     ,shortened?        "~:[~;…~]" ((:after :source-content)))
+            (:close          nil                "\""       ((:after :shortened?))))))))
 
 (defun make-source (source &key content)
   (let+ (((&flet make-it (name content)
@@ -30,6 +33,8 @@
          ((&flet stream-name (stream)
             (or (ignore-errors (pathname stream)) "<stream>"))))
     (etypecase source
-      (string   (make-it "<string>"           (or content source)))
+      (string   (if content
+                    (make-it source     content)
+                    (make-it "<string>" source)))
       (stream   (make-it (stream-name source) content))
       (pathname (make-it source               content)))))

@@ -1,4 +1,4 @@
-;;;; source.lisp --- Tests for the source class.
+;;;; source.lisp --- Unit tests for the source class.
 ;;;;
 ;;;; Copyright (C) 2017, 2018 Jan Moringen
 ;;;;
@@ -13,11 +13,21 @@
   "Test printing `source' instances."
 
   (mapc (lambda+ ((args expected))
-          (is (string= expected (with-output-to-string (stream)
-                                  (print-items:format-print-items
-                                   stream (print-items:print-items
-                                           (apply #'make-source args)))))))
-        '((("foo") "<string> \"foo\""))))
+          (let ((source (apply #'make-source args)))
+            (is (string= expected
+                         (with-output-to-string (stream)
+                           (print-items:format-print-items
+                            stream (print-items:print-items source)))))))
+
+        `((("foo")                                   "<string> \"foo\"")
+          (("foo"             :content "bar")        "foo \"bar\"")
+          ((,(make-string 100 :initial-element #\a)) "<string> \"aaaaaaaaaaaaaaaaaaaa…\"")
+
+          ((,*standard-input*)                       "<stream>")
+          ((,*standard-input* :content "bar")        "<stream> \"bar\"")
+
+          ((,#P"foo.baz")                            "foo.baz")
+          ((,#P"foo.baz"      :content "bar")        "foo.baz \"bar\""))))
 
 (test make-source.smoke
   "Test making `source' instances using `make-source'."
@@ -26,6 +36,11 @@
           (let ((source (apply #'make-source args)))
             (is (equal expected-name    (name source)))
             (is (equal expected-content (content source)))))
-        `((("foo")                             "<string>"   "foo")
-          ((,(make-string-input-stream "foo")) "<stream>"   nil)
-          ((,#P"foo.txt")                      ,#P"foo.txt" nil))))
+        `((("foo")                            "<string>"   "foo")
+          (("foo" :content "bar")             "foo"        "bar")
+
+          ((,*standard-input*)                "<stream>"   nil)
+          ((,*standard-input* :content "bar") "<stream>"   "bar")
+
+          ((,#P"foo.txt")                     ,#P"foo.txt" nil)
+          ((,#P"foo.txt" :content "bar")      ,#P"foo.txt" "bar"))))

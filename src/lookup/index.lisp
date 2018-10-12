@@ -1,3 +1,9 @@
+;;;; index.lisp --- Index data structures provided by the lookup module.
+;;;;
+;;;; Copyright (C) 2017, 2018 Jan Moringen
+;;;;
+;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+
 (cl:in-package #:text.source-location.lookup)
 
 ;;; `range-index'
@@ -6,11 +12,14 @@
   ((%ranges :accessor %ranges
             :initform '())))
 
-(defmethod print-items:print-items append ((object range-index))
-  `((:ranges-count ,(length (%ranges object)) "~:D range~:P")))
+(defun make-range-index ()
+  (make-instance 'range-index))
 
 (defmethod %count ((index range-index))
   (length (%ranges index)))
+
+(defmethod print-items:print-items append ((object range-index))
+  `((:ranges-count ,(length (%ranges object)) "~:D range~:P")))
 
 (let+ (((&flet %lookup (range index test if-multiple)
           (declare (type function test))
@@ -49,8 +58,14 @@
   ((%locations :accessor %locations
                :initform (make-hash-table :test #'eq))))
 
-(defun make-index ()
+(defun make-location-index ()
   (make-instance 'location-index))
+
+(defun make-index ()
+  (make-location-index))
+
+(declaim (sb-ext:deprecated :early ("text.source-location" "0.1")
+                            (function make-index :replacement :make-location-index)))
 
 (defmethod %count ((index location-index))
   (let ((result 0))

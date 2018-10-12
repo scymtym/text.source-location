@@ -79,11 +79,26 @@
 
 (defgeneric location (annotation)
   (:documentation
-   "TODO"))
+   "Return the location of ANNOTATION.
+
+    The location is the range of text in a source to which ANNOTATION
+    applies.
+
+    Returned object can be used with the location protocol."))
 
 (defgeneric text (annotation)  ; TODO could be any object, not just text
   (:documentation
-   "TODO"))
+   "Return the text of ANNOTATION.
+
+    The text is the information associated by ANNOTATION with its
+    location."))
+
+(defgeneric kind (annotation)
+  (:documentation
+   "Return the kind of ANNOTATION.
+
+    The kind characterizes the information provided by the ANNOTATION
+    as a note, a warning, an error, etc."))
 
 ;;; Line and column protocol
 

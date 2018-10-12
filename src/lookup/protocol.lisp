@@ -1,3 +1,9 @@
+;;;; protocol.lisp --- Protocol provided by the lookup module.
+;;;;
+;;;; Copyright (C) 2018 Jan Moringen
+;;;;
+;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+
 (cl:in-package #:text.source-location.lookup)
 
 ;; TODO could be define in text.source-location system?
