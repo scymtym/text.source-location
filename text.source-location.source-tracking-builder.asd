@@ -1,4 +1,4 @@
-(defsystem "text.source-location.source-tracking-builder"
+(asdf:defsystem "text.source-location.source-tracking-builder"
   :description "A builder that attaches source locations to nodes"
   :license     "LLGPLv3" ; see COPYING for details
 
@@ -21,12 +21,16 @@
 
   :in-order-to ((test-op (test-op "text.source-location.source-tracking-builder/test"))))
 
-(defsystem "text.source-location.source-tracking-builder/test"
+(asdf:defsystem "text.source-location.source-tracking-builder/test"
 
   :version    (:read-file-form "version-string.sexp")
-  :depends-on ((:version "fiveam"               "1.4")
+  :depends-on ((:version "fiveam"                                       "1.4")
 
-               (:version "text.source-location" (:read-file-form "version-string.sexp")))
+               (:version "text.source-location"                         (:read-file-form "version-string.sexp"))
+               (:version "text.source-location.source-tracking-builder" (:read-file-form "version-string.sexp")))
+
+  :components ((:module     "test"
+                :components ((:file        "source-tracking-builder"))))
 
   :perform    (test-op (operation component)
                 (uiop:symbol-call '#:text.source-location.source-tracking-builder.test
