@@ -7,6 +7,7 @@
 (cl:defpackage #:text.source-location.lookup.test
   (:use
    #:cl
+   #:alexandria
 
    #:fiveam
 
