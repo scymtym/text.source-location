@@ -15,7 +15,9 @@
           :reader  end))
   (:default-initargs
    :start (missing-required-initarg 'range :start)
-   :end   (missing-required-initarg 'range :end)))
+   :end   (missing-required-initarg 'range :end))
+  (:documentation
+   "A delimited sequence of characters within a source."))
 
 (defmethod bounds ((range range))
   (values (start range) (end range)))

@@ -13,7 +13,9 @@
             :reader  content))
   (:default-initargs
    :name    (missing-required-initarg 'source :name)
-   :content (missing-required-initarg 'source :content)))
+   :content (missing-required-initarg 'source :content))
+  (:documentation
+   "A name optionally alongside the content of source."))
 
 (defmethod print-items:print-items append ((object source))
   (let+ ((content           (content object))

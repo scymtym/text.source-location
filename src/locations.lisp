@@ -42,7 +42,9 @@
           :type    non-negative-integer
           :reader  index))
   (:default-initargs
-   :index (missing-required-initarg 'index-position :index)))
+   :index (missing-required-initarg 'index-position :index))
+  (:documentation
+   "A position represented as an integer index."))
 
 (defmethod print-items:print-items append ((object index-position))
   `((:index ,(index object) "~D")))
@@ -72,7 +74,9 @@
            :reader   column))
   (:default-initargs
    :line   (missing-required-initarg 'line+column-position :line)
-   :column (missing-required-initarg 'line+column-position :column)))
+   :column (missing-required-initarg 'line+column-position :column))
+  (:documentation
+   "A position represented as a line-column pair."))
 
 (defmethod index ((position line+column-position))
   (error "not available"))

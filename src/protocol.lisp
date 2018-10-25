@@ -20,7 +20,7 @@
 
 (defgeneric location< (left right)
   (:documentation
-   "TODO"))
+   "Return true if LEFT precedes RIGHT in the source."))
 
 (defgeneric location= (left right &key &allow-other-keys) ; TODO think about &key
   (:documentation
