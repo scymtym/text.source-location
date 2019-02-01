@@ -1,5 +1,7 @@
 (cl:in-package #:text.source-location.print)
 
+;;; Unicode style
+
 (defclass style-unicode ()
   ())
 
@@ -9,8 +11,7 @@
 (defmethod print-source-using-style ((style  style-unicode)
                                      (stream t)
                                      (source source))
-  (let ((name (name source)))
-    (format stream "In ~A:" name)))
+  (format stream "In ~A:" (safe-source-name source)))
 
 (defmethod print-line-using-style ((style   style-unicode)
                                    (stream  t)
@@ -80,7 +81,7 @@
 (defmethod print-source-using-style ((style  style-unicode+ansi-escapes)
                                      (stream t)
                                      (source source))
-  (let ((name (name source)))
+  (let ((name (safe-source-name source)))
     (format stream "In ~C[35m~A~C[0m:" #\Escape name #\Escape)))
 
 (defmethod print-line-annotation-using-style

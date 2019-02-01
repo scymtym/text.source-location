@@ -19,6 +19,7 @@
                  :serial     t
                  :components ((:file       "package")
                               (:file       "protocol")
+                              (:file       "util")
 
                               (:file       "print")
 
