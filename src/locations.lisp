@@ -52,6 +52,12 @@
 (defmethod attach-text ((position index-position) (text t))
   (change-class position 'index+info-position :info text))
 
+(defmethod location< ((left index-position) (right index-position))
+  (< (index left) (index right)))
+
+(defmethod location= ((left index-position) (right index-position) &key)
+  (= (index left) (index right)))
+
 ;;; `index+info-position'
 
 (defclass index+info-position (index-position info-mixin)
@@ -212,8 +218,7 @@
 (defmethod location< ((left location) (right location))
   (location< (start left) (start right)))
 
-(defmethod location= ((left  location)
-                      (right location)
+(defmethod location= ((left location) (right location)
                       &key
                       (compare-source?         t)
                       (compare-source-content? t)
@@ -221,4 +226,4 @@
   (and (or (not compare-source?)
            (equal (source left) (source right))) ; TODO source=
        (or (not compare-bounds?)
-           (equal (range left) (range right)))))
+           (location= (range left) (range right)))))

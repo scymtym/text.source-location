@@ -50,6 +50,10 @@
 (defmethod location< ((left range) (right range))
   (location< (start left) (end right)))
 
+(defmethod location= ((left range) (right range) &key)
+  (and (location= (start left) (start right))
+       (location= (end   left) (end   right))))
+
 (defmethod attach-text ((position range) (text t))
   (attach-text (start position) text)
   (attach-text (end   position) text)

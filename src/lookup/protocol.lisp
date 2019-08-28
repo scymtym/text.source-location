@@ -1,6 +1,6 @@
 ;;;; protocol.lisp --- Protocol provided by the lookup module.
 ;;;;
-;;;; Copyright (C) 2018 Jan Moringen
+;;;; Copyright (C) 2018, 2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -19,8 +19,7 @@
     (and (or (sloc:location< start location) ; TODO location<=
              (sloc:location= start location))
          (or (sloc:location< location end) ; TODO this should be < in some cases and <= in others. keyword parameter?
-             ; (sloc:location= location end)
-             ))))
+             (sloc:location= location end)))))
 
 (defmethod location-in? ((location sloc:range) (range sloc:range))
   (let+ (((&values start end) (sloc:bounds location)))
@@ -30,8 +29,11 @@
   (location-in? (sloc:range location) range))
 
 (defmethod location-in? ((location t) (range sloc:location))
-  ;; TODO compare source if applicable?
   (location-in? location (sloc:range range)))
+
+(defmethod location-in? ((location sloc:location) (range sloc:location))
+  (and (eq (sloc:source location) (sloc:source range))
+       (call-next-method)))
 
 ;;; Lookup protocol
 
