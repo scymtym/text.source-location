@@ -1,6 +1,6 @@
 ;;;; locations.lisp --- Representation and utilities for source locations.
 ;;;;
-;;;; Copyright (C) 2012-2018 Jan Moringen
+;;;; Copyright (C) 2012-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -38,9 +38,9 @@
 ;;; `index-position'
 
 (defclass index-position (print-items:print-items-mixin)
-  ((index :initarg :index
-          :type    non-negative-integer
-          :reader  index))
+  ((%index :initarg :index
+           :type    non-negative-integer
+           :reader  index))
   (:default-initargs
    :index (missing-required-initarg 'index-position :index))
   (:documentation
@@ -72,12 +72,12 @@
 ;;; `line+column-position'
 
 (defclass line+column-position (print-items:print-items-mixin)
-  ((line   :initarg  :line
-           :type     non-negative-integer
-           :reader   line)
-   (column :initarg  :column
-           :type     non-negative-integer
-           :reader   column))
+  ((%line   :initarg  :line
+            :type     non-negative-integer
+            :reader   line)
+   (%column :initarg  :column
+            :type     non-negative-integer
+            :reader   column))
   (:default-initargs
    :line   (missing-required-initarg 'line+column-position :line)
    :column (missing-required-initarg 'line+column-position :column))
@@ -142,19 +142,19 @@
 ;;; `location' class
 
 (defclass location (print-items:print-items-mixin)
-  ((source :initarg  :source
-           :accessor source             ; TODO read-only?
-           :initform nil
-           :documentation
-           "Stores the source that was being parsed when the error
-            occurred.")
-   (range  :initarg  :range
-           :type     (or null range)
-           :accessor range              ; TODO read-only?
-           :initform nil                ; TODO required?
-           :documentation
-           "Optionally stores bounds of interesting region within
-            source string."))
+  ((%source :initarg  :source
+            :accessor source             ; TODO read-only?
+            :initform nil
+            :documentation
+            "Stores the source that was being parsed when the error
+             occurred.")
+   (%range  :initarg  :range
+            :type     (or null range)
+            :accessor range              ; TODO read-only?
+            :initform nil                ; TODO required?
+            :documentation
+            "Optionally stores bounds of interesting region within
+             source string."))
   (:documentation
    "A location within a source string."))
 

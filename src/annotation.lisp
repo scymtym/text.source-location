@@ -1,6 +1,6 @@
 ;;;; annotation.lisp --- Locations with text annotations.
 ;;;;
-;;;; Copyright (C) 2017, 2018 Jan Moringen
+;;;; Copyright (C) 2017, 2018, 2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,15 +12,15 @@
   `(member :info :note :warning :error))
 
 (defclass annotation (print-items:print-items-mixin)
-  ((location :initarg  :location
-             :reader   location)
-   (text     :initarg  :text
-             :type     string
-             :reader   text)
-   (kind     :initarg  :kind
-             :type     annotation-kind
-             :reader   kind
-             :initform :note))
+  ((%location :initarg  :location
+              :reader   location)
+   (%text     :initarg  :text
+              :type     string
+              :reader   text)
+   (%kind     :initarg  :kind
+              :type     annotation-kind
+              :reader   kind
+              :initform :note))
   (:default-initargs
    :location (missing-required-initarg 'annotation :location)
    :text     (missing-required-initarg 'annotation :text))

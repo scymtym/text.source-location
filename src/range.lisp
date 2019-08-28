@@ -1,18 +1,18 @@
 ;;;; range.lisp --- Runs of characters in a source.
 ;;;;
-;;;; Copyright (C) 2012-2018 Jan Moringen
+;;;; Copyright (C) 2012-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:text.source-location)
 
 (defclass range (print-items:print-items-mixin)
-  ((start :initarg :start
-          ;;:type    position
-          :reader  start)
-   (end   :initarg :end
-          ;;:type    position
-          :reader  end))
+  ((%start :initarg :start
+           ;;:type    position
+           :reader  start)
+   (%end   :initarg :end
+           ;;:type    position
+           :reader  end))
   (:default-initargs
    :start (missing-required-initarg 'range :start)
    :end   (missing-required-initarg 'range :end))

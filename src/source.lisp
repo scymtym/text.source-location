@@ -1,16 +1,16 @@
 ;;;; source.lisp --- Sources of text.
 ;;;;
-;;;; Copyright (C) 2017, 2018 Jan Moringen
+;;;; Copyright (C) 2017, 2018, 2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:text.source-location)
 
 (defclass source (print-items:print-items-mixin)
-  ((name    :initarg :name
-            :reader  name)
-   (content :initarg :content ; TODO should this be optional?
-            :reader  content))
+  ((%name    :initarg :name
+             :reader  name)
+   (%content :initarg :content ; TODO should this be optional?
+             :reader  content))
   (:default-initargs
    :name    (missing-required-initarg 'source :name)
    :content (missing-required-initarg 'source :content))
