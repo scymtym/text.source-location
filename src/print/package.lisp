@@ -19,7 +19,9 @@
    #:print-line-using-style
 
    #:print-line-annotation-using-style
-   #:print-line-annotations-using-style)
+   #:print-line-annotations-using-style
+
+   #:print-annotations)
 
   ;; Service
   (:export
